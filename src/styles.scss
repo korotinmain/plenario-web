@@ -1,0 +1,65 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$violet-palette,
+        tertiary: mat.$cyan-palette,
+        theme-type: light,
+      ),
+      typography: Inter,
+      density: -1,
+    )
+  );
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  height: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--mat-sys-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+:root {
+  --pln-spacing-xs: 4px;
+  --pln-spacing-sm: 8px;
+  --pln-spacing-md: 16px;
+  --pln-spacing-lg: 24px;
+  --pln-spacing-xl: 32px;
+  --pln-spacing-2xl: 48px;
+  --pln-radius-sm: 8px;
+  --pln-radius-md: 12px;
+  --pln-radius-lg: 16px;
+  --pln-sidebar-width: 240px;
+  --pln-content-max-width: 1200px;
+}
+
+.text-muted {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.loading-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--pln-spacing-2xl);
+}

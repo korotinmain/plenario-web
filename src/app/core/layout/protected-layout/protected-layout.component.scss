@@ -1,0 +1,44 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.app-container {
+  height: 100%;
+}
+
+.app-sidebar {
+  width: var(--pln-sidebar-width);
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-low);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 24px 16px 16px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--mat-sys-primary);
+  letter-spacing: -0.03em;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding-top: 8px;
+}
+
+.app-content {
+  background-color: var(--mat-sys-surface);
+}
+
+.content-main {
+  padding: var(--pln-spacing-xl);
+  max-width: var(--pln-content-max-width);
+  min-height: 100%;
+}

@@ -9,7 +9,8 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-RUN printf "export const environment = {\n  production: true,\n  apiBaseUrl: '%s',\n};\n" "$API_BASE_URL" \
+RUN mkdir -p src/environments && \
+    printf "export const environment = {\n  production: true,\n  apiBaseUrl: '%s',\n};\n" "$API_BASE_URL" \
     > src/environments/environment.production.ts
 RUN npm run build
 

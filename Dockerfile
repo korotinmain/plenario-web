@@ -11,7 +11,9 @@ RUN npm ci
 COPY . .
 RUN mkdir -p src/environments && \
     printf "export const environment = {\n  production: true,\n  apiBaseUrl: '%s',\n};\n" "$API_BASE_URL" \
-    > src/environments/environment.production.ts
+    > src/environments/environment.production.ts && \
+    printf "export const environment = {\n  production: false,\n  apiBaseUrl: '%s',\n};\n" "$API_BASE_URL" \
+    > src/environments/environment.ts
 RUN npm run build
 
 # Stage 2: Serve

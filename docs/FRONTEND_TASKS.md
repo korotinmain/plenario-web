@@ -58,27 +58,32 @@ Use this file to track increment progress. Update status as work is completed.
 
 ---
 
-## Increment 1 — Auth Core [ ]
+## Increment 1 — Auth Core ✅ COMPLETED
+
+**Date completed:** 2026-04-03
 
 ### Deliverables
 
-- [ ] Register page — full form (email, password, name)
-- [ ] Login page — full form (email, password, Google option)
-- [ ] Auth API service — register, login, me endpoints
-- [ ] Auth store/facade — loading, error, user state
-- [ ] Auth guard — connected to real session
-- [ ] Public guard — connected to real session
-- [ ] Session bootstrap — /me API call on app init
-- [ ] Unverified email handling — explicit UI state
-- [ ] Resend confirmation entry point
+- [x] Register page — full form (name optional, email, password with show/hide)
+- [x] Register success state — "check your inbox" screen
+- [x] Login page — full form (email, password, Google button)
+- [x] Unverified email banner — explicit UI state with resend confirmation inline
+- [x] Auth API service — register, login, me, logout, forgotPassword, resetPassword, resendConfirmation, googleLogin
+- [x] Auth store — loading/error/success state for register, login, resend; LoginError type detection
+- [x] Session bootstrap — APP_INITIALIZER calls /auth/me before app renders, graceful 401 fallback
+- [x] AuthService — real /auth/me HTTP call with withCredentials
+- [x] PasswordFieldComponent — show/hide toggle, Material errors for required/minlength
+- [x] Auth request/response models — RegisterRequest, LoginRequest, ForgotPasswordRequest, ResetPasswordRequest, ResendConfirmationRequest, AuthResponse, MessageResponse
 
 ### Tests
 
-- [ ] Auth API service tests
-- [ ] Auth facade/store tests
-- [ ] Guard integration tests
-- [ ] Register/login form validation tests
-- [ ] UI interaction tests
+- [x] AuthService spec — bootstrapSession success/401/network-error, setUser, clearSession (9 tests)
+- [x] AuthApiService spec — all HTTP methods (register, login, me, logout, forgotPassword, resetPassword, resendConfirmation) with correct URL/method/credentials (8 tests)
+- [x] AuthStore spec — register success/error, login success/unverified/invalid_credentials/unknown, resend success/error, logout, reset state methods (11 tests)
+- [x] RegisterComponent spec — form validation, submit behavior, success state, error display, destroy cleanup (9 tests)
+- [x] LoginComponent spec — form validation, submit behavior, unverified banner, resend, Google login, destroy cleanup (11 tests)
+
+**Total Increment 1 tests: 48 (cumulative total: 70)**
 
 ---
 

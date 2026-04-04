@@ -1,0 +1,79 @@
+<div class="auth-page">
+  @if (success()) {
+    <div class="success-block">
+      <div class="success-icon-wrap" aria-hidden="true">
+        <mat-icon>mark_email_read</mat-icon>
+      </div>
+      <div class="success-body">
+        <h2 class="auth-title">Check your inbox</h2>
+        <p class="auth-subtitle">
+          We sent a confirmation link to<br />
+          <strong class="email-highlight">{{ emailCtrl.value }}</strong>
+        </p>
+        <p class="auth-hint">Didn't get it? Check your spam folder or request a new link.</p>
+      </div>
+      <a mat-stroked-button routerLink="/login" class="back-btn">Back to sign in</a>
+    </div>
+  } @else {
+    <div class="auth-header">
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-subtitle">Start planning smarter — it's free.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="auth-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Name (optional)</mat-label>
+        <input matInput [formControl]="nameCtrl" placeholder="Your name" autocomplete="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email address</mat-label>
+        <input
+          matInput
+          type="email"
+          [formControl]="emailCtrl"
+          placeholder="you@example.com"
+          autocomplete="email"
+        />
+        @if (emailCtrl.hasError('required') && emailCtrl.touched) {
+          <mat-error>Email is required</mat-error>
+        } @else if (emailCtrl.hasError('email') && emailCtrl.touched) {
+          <mat-error>Enter a valid email address</mat-error>
+        }
+      </mat-form-field>
+
+      <app-password-field
+        [control]="passwordCtrl"
+        label="Password"
+        placeholder="Minimum 8 characters"
+      />
+
+      @if (error()) {
+        <div class="field-error-banner" role="alert">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      <button mat-flat-button type="submit" class="submit-btn" [disabled]="loading()">
+        @if (loading()) {
+          <mat-spinner diameter="18" />
+          <span>Creating account…</span>
+        } @else {
+          Create account
+        }
+      </button>
+    </form>
+
+    <p class="terms-hint">
+      By creating an account you agree to our
+      <a href="#" tabindex="-1">Terms of Service</a> and
+      <a href="#" tabindex="-1">Privacy Policy</a>.
+    </p>
+
+    <div class="auth-footer">
+      <span class="auth-footer__text">Already have an account?</span>
+      <a mat-button routerLink="/login" class="auth-footer__link">Sign in</a>
+    </div>
+  }
+</div>

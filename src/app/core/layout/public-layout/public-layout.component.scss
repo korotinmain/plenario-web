@@ -9,25 +9,46 @@
   align-items: center;
   justify-content: center;
   padding: var(--pln-spacing-lg);
-  background-color: var(--mat-sys-surface-container-low);
+  background: var(--mat-sys-surface-container-lowest);
 }
 
 .public-layout__card {
   width: 100%;
-  max-width: 440px;
+  max-width: 460px;
   background: var(--mat-sys-surface);
-  border-radius: var(--pln-radius-lg);
-  padding: 40px;
-  box-shadow: var(--mat-sys-level2);
+  border-radius: 20px;
+  padding: 48px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--mat-sys-outline) 12%, transparent),
+    0 4px 6px -1px color-mix(in srgb, var(--mat-sys-shadow) 6%, transparent),
+    0 16px 32px -4px color-mix(in srgb, var(--mat-sys-shadow) 8%, transparent);
 }
 
 .public-layout__brand {
-  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.public-layout__logo-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  font-size: 0.875rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0;
+  flex-shrink: 0;
 }
 
 .public-layout__logo {
-  font-size: 1.375rem;
+  font-size: 1.125rem;
   font-weight: 700;
-  color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-surface);
   letter-spacing: -0.03em;
 }

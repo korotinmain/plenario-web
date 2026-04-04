@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { User } from './auth.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -14,13 +16,17 @@ export class AuthService {
   readonly isAuthenticated$ = this.user$.pipe(map((u) => u !== null));
   readonly initialized$ = this._state$.pipe(map((s) => s.initialized));
 
-  /**
-   * Bootstrap the session from the /me API endpoint.
-   * Stub for Increment 0 — will be connected to the API in Increment 1.
-   */
+  constructor(private readonly http: HttpClient) {}
+
   bootstrapSession(): Observable<void> {
-    this._state$.next({ user: null, initialized: true });
-    return of(void 0);
+    return this.http.get<User>(`${environment.apiBaseUrl}/auth/me`, { withCredentials: true }).pipe(
+      tap((user) => this._state$.next({ user, initialized: true })),
+      map(() => void 0),
+      catchError(() => {
+        this._state$.next({ user: null, initialized: true });
+        return of(void 0);
+      }),
+    );
   }
 
   setUser(user: User): void {

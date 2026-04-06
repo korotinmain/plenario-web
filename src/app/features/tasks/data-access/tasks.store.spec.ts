@@ -65,9 +65,7 @@ describe('TasksStore', () => {
 
     it('should set error on load failure', async () => {
       setup({
-        getAll: vi.fn().mockReturnValue(
-          throwError(() => ({ error: { message: 'Server error' } })),
-        ),
+        getAll: vi.fn().mockReturnValue(throwError(() => ({ error: { message: 'Server error' } }))),
       });
       store.load();
       const s = await firstValueFrom(store.state$);
@@ -86,19 +84,19 @@ describe('TasksStore', () => {
   describe('create()', () => {
     it('should add the new task to state and show snackbar', async () => {
       setup();
-      await firstValueFrom(
-        store.create({ title: 'Write tests' } as CreateTaskRequest),
-      );
+      await firstValueFrom(store.create({ title: 'Write tests' } as CreateTaskRequest));
       const s = await firstValueFrom(store.state$);
       expect(s.tasks).toContainEqual(mockTask);
-      expect(snackBarMock.open).toHaveBeenCalledWith('Task created.', 'Dismiss', { duration: 3000 });
+      expect(snackBarMock.open).toHaveBeenCalledWith('Task created.', 'Dismiss', {
+        duration: 3000,
+      });
     });
 
     it('should set saveError on create failure', async () => {
       setup({
-        create: vi.fn().mockReturnValue(
-          throwError(() => ({ error: { message: 'Create failed' } })),
-        ),
+        create: vi
+          .fn()
+          .mockReturnValue(throwError(() => ({ error: { message: 'Create failed' } }))),
       });
       try {
         await firstValueFrom(store.create({ title: 'Bad task' } as CreateTaskRequest));
@@ -115,14 +113,16 @@ describe('TasksStore', () => {
       await firstValueFrom(store.update('t1', { status: 'DONE' } as UpdateTaskRequest));
       const s = await firstValueFrom(store.state$);
       expect(s.tasks.find((t) => t.id === 't1')?.status).toBe('DONE');
-      expect(snackBarMock.open).toHaveBeenCalledWith('Task updated.', 'Dismiss', { duration: 3000 });
+      expect(snackBarMock.open).toHaveBeenCalledWith('Task updated.', 'Dismiss', {
+        duration: 3000,
+      });
     });
 
     it('should set saveError on update failure', async () => {
       setup({
-        update: vi.fn().mockReturnValue(
-          throwError(() => ({ error: { message: 'Update failed' } })),
-        ),
+        update: vi
+          .fn()
+          .mockReturnValue(throwError(() => ({ error: { message: 'Update failed' } }))),
       });
       try {
         await firstValueFrom(store.update('t1', { status: 'DONE' } as UpdateTaskRequest));
@@ -139,14 +139,16 @@ describe('TasksStore', () => {
       await firstValueFrom(store.delete('t1'));
       const s = await firstValueFrom(store.state$);
       expect(s.tasks.find((t) => t.id === 't1')).toBeUndefined();
-      expect(snackBarMock.open).toHaveBeenCalledWith('Task deleted.', 'Dismiss', { duration: 3000 });
+      expect(snackBarMock.open).toHaveBeenCalledWith('Task deleted.', 'Dismiss', {
+        duration: 3000,
+      });
     });
 
     it('should set saveError on delete failure', async () => {
       setup({
-        delete: vi.fn().mockReturnValue(
-          throwError(() => ({ error: { message: 'Delete failed' } })),
-        ),
+        delete: vi
+          .fn()
+          .mockReturnValue(throwError(() => ({ error: { message: 'Delete failed' } }))),
       });
       try {
         await firstValueFrom(store.delete('t1'));

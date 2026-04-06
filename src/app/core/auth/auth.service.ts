@@ -5,6 +5,8 @@ import { map, catchError, tap } from 'rxjs/operators';
 import { User } from './auth.models';
 import { environment } from '../../../environments/environment';
 
+const TOKEN_KEY = 'pln_access_token';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly _state$ = new BehaviorSubject<{
@@ -18,11 +20,29 @@ export class AuthService {
 
   constructor(private readonly http: HttpClient) {}
 
+  getToken(): string | null {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+
+  setToken(token: string): void {
+    localStorage.setItem(TOKEN_KEY, token);
+  }
+
+  clearToken(): void {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+
   bootstrapSession(): Observable<void> {
-    return this.http.get<User>(`${environment.apiBaseUrl}/auth/me`, { withCredentials: true }).pipe(
+    if (!this.getToken()) {
+      this._state$.next({ user: null, initialized: true });
+      return of(void 0);
+    }
+
+    return this.http.get<User>(`${environment.apiBaseUrl}/auth/me`).pipe(
       tap((user) => this._state$.next({ user, initialized: true })),
       map(() => void 0),
       catchError(() => {
+        this.clearToken();
         this._state$.next({ user: null, initialized: true });
         return of(void 0);
       }),
@@ -34,6 +54,7 @@ export class AuthService {
   }
 
   clearSession(): void {
+    this.clearToken();
     this._state$.next({ user: null, initialized: true });
   }
 }

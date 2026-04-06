@@ -23,17 +23,15 @@ export class AuthApiService {
   }
 
   login(body: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.base}/login`, body, {
-      withCredentials: true,
-    });
+    return this.http.post<AuthResponse>(`${this.base}/login`, body);
   }
 
   me(): Observable<User> {
-    return this.http.get<User>(`${this.base}/me`, { withCredentials: true });
+    return this.http.get<User>(`${this.base}/me`);
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(`${this.base}/logout`, {}, { withCredentials: true });
+    return this.http.post<void>(`${this.base}/logout`, {});
   }
 
   forgotPassword(body: ForgotPasswordRequest): Observable<MessageResponse> {

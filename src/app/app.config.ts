@@ -5,11 +5,12 @@ import {
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { routes } from './app.routes';
 import { AuthService } from './core/auth/auth.service';
+import { authInterceptor } from './core/auth/auth.interceptor';
 
 function bootstrapFactory(authService: AuthService): () => Promise<void> {
   return () => firstValueFrom(authService.bootstrapSession());
@@ -20,7 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptors([authInterceptor])),
     {
       provide: APP_INITIALIZER,
       useFactory: bootstrapFactory,

@@ -108,6 +108,7 @@ export class AuthStore {
         .login(data)
         .pipe(
           tap((response) => {
+            this.authService.setToken(response.accessToken);
             this.authService.setUser(response.user);
             this.router.navigate(['/dashboard']);
           }),

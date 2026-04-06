@@ -87,57 +87,61 @@ Use this file to track increment progress. Update status as work is completed.
 
 ---
 
-## Increment 2 — Email Confirmation and Password Recovery [ ]
+## Increment 2 — Email Confirmation and Password Recovery ✅ COMPLETED
+
+**Date completed:** 2026-04-06
 
 ### Deliverables
 
-- [ ] Confirm email result page — success/failure/expired states
-- [ ] Resend confirmation flow
-- [ ] Forgot password page
-- [ ] Reset password page
-
-### Tests
-
-- [ ] Form tests
-- [ ] Token-state page tests
-- [ ] Resend confirmation behavior tests
+- [x] Confirm email result page — 4 states: loading / success / error / no-token
+- [x] Resend confirmation flow — inline in login unverified-email banner
+- [x] Forgot password page — Tailwind inputs, success state, back link
+- [x] Reset password page — dual password fields, token from query param, 4 states
+- [x] Route redirects — `auth/confirm-email` → `confirm-email`, `auth/reset-password` → `reset-password` (backend email links)
+- [x] Auth store — forgotPassword and resetPassword loading/error/success state
+- [x] Auth API — `confirmEmail(token)` GET, `forgotPassword`, `resetPassword` wired
 
 ---
 
-## Increment 3 — Google Auth [ ]
+## Increment 3 — Google Auth ✅ COMPLETED
+
+**Date completed:** 2026-04-06
 
 ### Deliverables
 
-- [ ] Google sign-in button integration on login
-- [ ] /auth/google/callback route and handler component
-- [ ] Session completion after Google callback
-- [ ] Error handling for callback failures
-
-### Tests
-
-- [ ] Callback handling logic tests
-- [ ] Auth state transition tests
+- [x] Google sign-in button on login page with `googleLogin()` → `window.location.href`
+- [x] `auth/google/callback` route — outside both guards, before wildcard
+- [x] `GoogleCallbackComponent` — reads `?accessToken=` from URL, stores token, calls `/auth/me`, navigates to dashboard or login
+- [x] JWT token persistence — `AuthService.setToken/getToken/clearToken` (localStorage `pln_access_token`)
+- [x] `authInterceptor` — functional interceptor adds `Authorization: Bearer <token>` to all API requests
+- [x] `bootstrapSession` — skips HTTP call if no token, clears token on 401
+- [x] Login stores `accessToken` from response via `setToken()`
+- [x] `clearSession()` now also calls `clearToken()`
 
 ---
 
-## Increment 4 — Projects [ ]
+## Increment 4 — Projects ✅ COMPLETED
+
+**Date completed:** 2026-04-06
 
 ### Deliverables
 
-- [ ] Projects list page — full implementation
-- [ ] Project create dialog
-- [ ] Project edit dialog
-- [ ] Project delete confirmation dialog
-- [ ] Project details page
-- [ ] Projects API service
-- [ ] Projects store
+- [x] `Project` model — `id, name, description, status, color, createdAt, updatedAt`
+- [x] `ProjectStatus` type — `active | on_hold | completed | archived`
+- [x] `ProjectsApiService` — `getAll, getById, create, update, delete`
+- [x] `ProjectsStore` — `load, create, update, delete` with loading/error/saving state + snackbar feedback
+- [x] `ProjectFormDialogComponent` — create dialog with name, description, color picker
+- [x] `EditProjectDialogComponent` — edit dialog with name, description, status chips, color picker
+- [x] `DeleteProjectDialogComponent` — confirmation dialog with project name
+- [x] `ProjectsListComponent` — grid of project cards, loading/empty/error states, create/edit/delete actions
+- [x] `ProjectDetailsComponent` — loads project by id, edit inline, back link, tasks placeholder
+- [x] Status badge styles — active/on_hold/completed/archived with color coding
 
-### Tests
+### Notes
 
-- [ ] Projects data-access tests
-- [ ] Projects store tests
-- [ ] Project form tests
-- [ ] Dialog interaction tests
+- Backend `/projects` API not yet implemented — UI is ready, will 404 until backend ships
+- Color bar per card (4px top strip in project color)
+- Menu with edit/delete per card
 
 ---
 

@@ -31,7 +31,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
     <!-- ── Stat cards ─────────────────────────────────────────────────────── -->
     @if (loading()) {
       <div class="stats-grid">
-        @for (_ of [1,2,3,4]; track $index) {
+        @for (_ of [1, 2, 3, 4]; track $index) {
           <div class="skeleton-stat-card"></div>
         }
       </div>
@@ -77,9 +77,12 @@ import { AuthService } from '../../../../core/auth/auth.service';
         </div>
         @if (loading()) {
           <div class="project-list">
-            @for (_ of [1,2,3,4,5]; track $index) {
+            @for (_ of [1, 2, 3, 4, 5]; track $index) {
               <div class="project-row-skeleton">
-                <div class="skeleton" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div>
+                <div
+                  class="skeleton"
+                  style="width:10px;height:10px;border-radius:50%;flex-shrink:0"
+                ></div>
                 <div class="skeleton skeleton-text" style="flex:1;max-width:200px"></div>
                 <div class="skeleton" style="width:60px;height:20px;border-radius:20px"></div>
               </div>
@@ -273,7 +276,9 @@ import { AuthService } from '../../../../core/auth/auth.service';
         gap: 12px;
         padding: 14px 22px;
         border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
-        &:last-child { border-bottom: none; }
+        &:last-child {
+          border-bottom: none;
+        }
       }
 
       .project-row {

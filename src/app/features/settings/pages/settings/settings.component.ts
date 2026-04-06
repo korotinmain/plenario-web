@@ -12,7 +12,13 @@ import { SettingsStore } from '../../data-access/settings.store';
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [DatePipe, MatIconModule, MatButtonModule, MatProgressSpinnerModule, ReactiveFormsModule],
+  imports: [
+    DatePipe,
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    ReactiveFormsModule,
+  ],
   template: `
     <!-- Page hero -->
     <div class="page-hero">
@@ -65,8 +71,17 @@ import { SettingsStore } from '../../data-access/settings.store';
                     <span class="field-error">{{ profileError() }}</span>
                   }
                   <div class="inline-actions">
-                    <button mat-flat-button type="submit" class="save-btn" [disabled]="profileSaving()">
-                      @if (profileSaving()) { <mat-spinner diameter="14" /> } @else { Save }
+                    <button
+                      mat-flat-button
+                      type="submit"
+                      class="save-btn"
+                      [disabled]="profileSaving()"
+                    >
+                      @if (profileSaving()) {
+                        <mat-spinner diameter="14" />
+                      } @else {
+                        Save
+                      }
                     </button>
                     <button mat-button type="button" (click)="cancelEditProfile()">Cancel</button>
                   </div>
@@ -230,8 +245,17 @@ import { SettingsStore } from '../../data-access/settings.store';
                   </div>
                 </div>
 
-                <button mat-flat-button type="submit" class="save-btn" [disabled]="passwordSaving()">
-                  @if (passwordSaving()) { <mat-spinner diameter="14" /> } @else { Update password }
+                <button
+                  mat-flat-button
+                  type="submit"
+                  class="save-btn"
+                  [disabled]="passwordSaving()"
+                >
+                  @if (passwordSaving()) {
+                    <mat-spinner diameter="14" />
+                  } @else {
+                    Update password
+                  }
                 </button>
               </form>
             }
@@ -517,7 +541,12 @@ import { SettingsStore } from '../../data-access/settings.store';
         color: #2563eb;
         padding: 0 4px;
         min-width: 0;
-        mat-icon { font-size: 14px; width: 14px; height: 14px; margin-right: 2px; }
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+          margin-right: 2px;
+        }
       }
 
       .inline-form {
@@ -592,7 +621,11 @@ import { SettingsStore } from '../../data-access/settings.store';
         font-size: 0.875rem;
         font-weight: 500;
         margin-bottom: 12px;
-        mat-icon { font-size: 18px; width: 18px; height: 18px; }
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
       }
       .pw-error {
         padding: 10px 14px;
@@ -648,22 +681,18 @@ export class SettingsComponent implements OnInit {
   readonly profileEditing = signal(false);
   readonly passwordExpanded = signal(false);
 
-  readonly profileSaving = toSignal(
-    this.settingsStore.state$.pipe(map((s) => s.profileSaving)),
-    { initialValue: false },
-  );
-  readonly profileError = toSignal(
-    this.settingsStore.state$.pipe(map((s) => s.profileError)),
-    { initialValue: null },
-  );
-  readonly passwordSaving = toSignal(
-    this.settingsStore.state$.pipe(map((s) => s.passwordSaving)),
-    { initialValue: false },
-  );
-  readonly passwordError = toSignal(
-    this.settingsStore.state$.pipe(map((s) => s.passwordError)),
-    { initialValue: null },
-  );
+  readonly profileSaving = toSignal(this.settingsStore.state$.pipe(map((s) => s.profileSaving)), {
+    initialValue: false,
+  });
+  readonly profileError = toSignal(this.settingsStore.state$.pipe(map((s) => s.profileError)), {
+    initialValue: null,
+  });
+  readonly passwordSaving = toSignal(this.settingsStore.state$.pipe(map((s) => s.passwordSaving)), {
+    initialValue: false,
+  });
+  readonly passwordError = toSignal(this.settingsStore.state$.pipe(map((s) => s.passwordError)), {
+    initialValue: null,
+  });
   readonly passwordSuccess = toSignal(
     this.settingsStore.state$.pipe(map((s) => s.passwordSuccess)),
     { initialValue: false },
@@ -679,10 +708,7 @@ export class SettingsComponent implements OnInit {
         Validators.required,
         Validators.minLength(8),
       ]),
-      newPassword: this.fb.nonNullable.control('', [
-        Validators.required,
-        Validators.minLength(8),
-      ]),
+      newPassword: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(8)]),
       confirmPassword: this.fb.nonNullable.control('', [Validators.required]),
     },
     { validators: confirmPasswordValidator },
@@ -729,10 +755,18 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  get nameCtrl() { return this.profileForm.controls.name; }
-  get currentPwCtrl() { return this.passwordForm.controls.currentPassword; }
-  get newPwCtrl() { return this.passwordForm.controls.newPassword; }
-  get confirmPwCtrl() { return this.passwordForm.controls.confirmPassword; }
+  get nameCtrl() {
+    return this.profileForm.controls.name;
+  }
+  get currentPwCtrl() {
+    return this.passwordForm.controls.currentPassword;
+  }
+  get newPwCtrl() {
+    return this.passwordForm.controls.newPassword;
+  }
+  get confirmPwCtrl() {
+    return this.passwordForm.controls.confirmPassword;
+  }
 }
 
 function confirmPasswordValidator(form: import('@angular/forms').AbstractControl) {
@@ -740,4 +774,3 @@ function confirmPasswordValidator(form: import('@angular/forms').AbstractControl
   const cp = form.get('confirmPassword')?.value;
   return np && cp && np !== cp ? { passwordMismatch: true } : null;
 }
-

@@ -34,7 +34,9 @@ const makeAuthApiMock = (overrides: Partial<Record<keyof AuthApiService, unknown
 
 const makeAuthServiceMock = () => ({
   setUser: vi.fn(),
+  setToken: vi.fn(),
   clearSession: vi.fn(),
+  clearToken: vi.fn(),
   user$: of(null),
   isAuthenticated$: of(false),
   initialized$: of(false),

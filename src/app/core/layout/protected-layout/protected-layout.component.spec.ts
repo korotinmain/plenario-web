@@ -29,7 +29,7 @@ describe('ProtectedLayoutComponent', () => {
 
   it('should render all nav items', () => {
     const el = fixture.nativeElement as HTMLElement;
-    const navItems = el.querySelectorAll('a[mat-list-item]');
+    const navItems = el.querySelectorAll('a.nav-item');
     expect(navItems.length).toBe(4);
   });
 

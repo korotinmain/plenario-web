@@ -2,7 +2,11 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
 import { tap, catchError, finalize } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { SettingsApiService, UpdateProfileRequest, ChangePasswordRequest } from './settings-api.service';
+import {
+  SettingsApiService,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
+} from './settings-api.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { User } from '../../../core/auth/auth.models';
 

@@ -463,7 +463,9 @@ export class TaskFormDialogComponent {
       Validators.maxLength(200),
     ]),
     description: this.fb.nonNullable.control(this.task?.description ?? ''),
-    dueDate: this.fb.control<string | null>(this.task?.dueDate?.slice(0, 10) ?? this.defaultDueDate ?? null),
+    dueDate: this.fb.control<string | null>(
+      this.task?.dueDate?.slice(0, 10) ?? this.defaultDueDate ?? null,
+    ),
     projectId: this.fb.control<string | null>(
       this.task?.projectId ?? this.defaultProjectId ?? null,
     ),

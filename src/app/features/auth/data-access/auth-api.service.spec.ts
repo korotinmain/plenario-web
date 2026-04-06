@@ -48,35 +48,33 @@ describe('AuthApiService', () => {
   });
 
   describe('login()', () => {
-    it('should POST to /auth/login with withCredentials', () => {
+    it('should POST to /auth/login with credentials', () => {
       const payload = { email: 'a@b.com', password: 'password123' };
       service.login(payload).subscribe();
 
       const req = httpMock.expectOne(`${base}/login`);
       expect(req.request.method).toBe('POST');
-      expect(req.request.withCredentials).toBe(true);
+      expect(req.request.body).toEqual(payload);
       req.flush({ user: mockUser, accessToken: 'tok' });
     });
   });
 
   describe('me()', () => {
-    it('should GET /auth/me with withCredentials', () => {
+    it('should GET /auth/me', () => {
       service.me().subscribe();
 
       const req = httpMock.expectOne(`${base}/me`);
       expect(req.request.method).toBe('GET');
-      expect(req.request.withCredentials).toBe(true);
       req.flush(mockUser);
     });
   });
 
   describe('logout()', () => {
-    it('should POST to /auth/logout with withCredentials', () => {
+    it('should POST to /auth/logout', () => {
       service.logout().subscribe();
 
       const req = httpMock.expectOne(`${base}/logout`);
       expect(req.request.method).toBe('POST');
-      expect(req.request.withCredentials).toBe(true);
       req.flush(null);
     });
   });

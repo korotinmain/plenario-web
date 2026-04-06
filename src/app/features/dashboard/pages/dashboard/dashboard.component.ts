@@ -47,12 +47,7 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
           icon="folder_open"
           gradient="violet"
         />
-        <app-stat-card
-          label="Open tasks"
-          [value]="openTasks()"
-          icon="task_alt"
-          gradient="blue"
-        />
+        <app-stat-card label="Open tasks" [value]="openTasks()" icon="task_alt" gradient="blue" />
         <app-stat-card
           label="Due today"
           [value]="dueTodayCount()"
@@ -125,7 +120,10 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
           <div class="task-list">
             @for (_ of [1, 2, 3]; track $index) {
               <div class="task-row-skeleton">
-                <div class="skeleton" style="width:22px;height:22px;border-radius:50%;flex-shrink:0"></div>
+                <div
+                  class="skeleton"
+                  style="width:22px;height:22px;border-radius:50%;flex-shrink:0"
+                ></div>
                 <div class="skeleton skeleton-text" style="flex:1;max-width:180px"></div>
                 <div class="skeleton" style="width:48px;height:18px;border-radius:10px"></div>
               </div>
@@ -143,7 +141,10 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
           <div class="task-list">
             @for (task of todayTasks(); track task.id) {
               <div class="task-row" [class.task-row--done]="task.status === 'DONE'">
-                <button class="status-btn status-btn--{{ task.status }}" (click)="cycleStatus(task)">
+                <button
+                  class="status-btn status-btn--{{ task.status }}"
+                  (click)="cycleStatus(task)"
+                >
                   @if (task.status === 'DONE') {
                     <mat-icon>check_circle</mat-icon>
                   } @else if (task.status === 'IN_PROGRESS') {
@@ -153,7 +154,9 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
                   }
                 </button>
                 <span class="task-row__name">{{ task.title }}</span>
-                <span class="priority-chip priority-chip--{{ task.priority.toLowerCase() }}">{{ task.priority }}</span>
+                <span class="priority-chip priority-chip--{{ task.priority.toLowerCase() }}">{{
+                  task.priority
+                }}</span>
               </div>
             }
           </div>
@@ -373,7 +376,9 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
         gap: 10px;
         padding: 12px 22px;
         border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
-        &:last-child { border-bottom: none; }
+        &:last-child {
+          border-bottom: none;
+        }
       }
 
       .task-row {
@@ -383,9 +388,16 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
         padding: 10px 18px;
         border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
         transition: background 0.12s;
-        &:last-child { border-bottom: none; }
-        &:hover { background: #f9f9fb; }
-        &--done .task-row__name { text-decoration: line-through; color: var(--pln-text-3, #71717a); }
+        &:last-child {
+          border-bottom: none;
+        }
+        &:hover {
+          background: #f9f9fb;
+        }
+        &--done .task-row__name {
+          text-decoration: line-through;
+          color: var(--pln-text-3, #71717a);
+        }
 
         &__name {
           flex: 1;
@@ -411,11 +423,23 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
         height: 24px;
         border-radius: 50%;
         transition: background 0.1s;
-        mat-icon { font-size: 20px; width: 20px; height: 20px; }
-        &--TODO mat-icon { color: #a1a1aa; }
-        &--IN_PROGRESS mat-icon { color: #2563eb; }
-        &--DONE mat-icon { color: #059669; }
-        &:hover { background: rgba(0,0,0,0.05); }
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+        &--TODO mat-icon {
+          color: #a1a1aa;
+        }
+        &--IN_PROGRESS mat-icon {
+          color: #2563eb;
+        }
+        &--DONE mat-icon {
+          color: #059669;
+        }
+        &:hover {
+          background: rgba(0, 0, 0, 0.05);
+        }
       }
 
       .priority-chip {
@@ -427,9 +451,21 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
         border-radius: 10px;
         white-space: nowrap;
         flex-shrink: 0;
-        &--low { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-        &--medium { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
-        &--high { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        &--low {
+          background: #f0fdf4;
+          color: #16a34a;
+          border: 1px solid #bbf7d0;
+        }
+        &--medium {
+          background: #fffbeb;
+          color: #b45309;
+          border: 1px solid #fde68a;
+        }
+        &--high {
+          background: #fef2f2;
+          color: #dc2626;
+          border: 1px solid #fecaca;
+        }
       }
 
       .panel-footer {
@@ -442,8 +478,6 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
         color: #2563eb;
         padding: 0 4px;
       }
-
-
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -485,8 +519,9 @@ export class DashboardComponent implements OnInit {
   );
   readonly upcomingCount = computed(
     () =>
-      this.allTasks().filter((t) => (t.dueDate?.slice(0, 10) ?? '') > this.todayStr && t.status !== 'DONE')
-        .length,
+      this.allTasks().filter(
+        (t) => (t.dueDate?.slice(0, 10) ?? '') > this.todayStr && t.status !== 'DONE',
+      ).length,
   );
 
   readonly todayTasks = computed(() =>

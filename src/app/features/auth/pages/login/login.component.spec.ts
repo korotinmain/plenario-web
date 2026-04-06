@@ -110,7 +110,7 @@ describe('LoginComponent', () => {
     });
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.unverified-banner')).toBeTruthy();
+    expect(el.querySelector('.info-banner')).toBeTruthy();
   });
 
   it('should not show generic error when error type is unverified_email', () => {
@@ -133,7 +133,7 @@ describe('LoginComponent', () => {
     });
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.field-error-banner')).toBeTruthy();
+    expect(el.querySelector('.error-banner')).toBeTruthy();
     expect(el.textContent).toContain('Invalid email or password.');
   });
 

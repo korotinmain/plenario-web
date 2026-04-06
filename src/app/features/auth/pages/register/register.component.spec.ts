@@ -89,6 +89,7 @@ describe('RegisterComponent', () => {
   it('should call register() when form is valid', () => {
     component.emailCtrl.setValue('test@example.com');
     component.passwordCtrl.setValue('password123');
+    component.confirmCtrl.setValue('password123');
     component.submit();
     expect(authStoreMock.register).toHaveBeenCalledWith({
       email: 'test@example.com',
@@ -101,6 +102,7 @@ describe('RegisterComponent', () => {
     component.nameCtrl.setValue('Alice');
     component.emailCtrl.setValue('alice@example.com');
     component.passwordCtrl.setValue('password123');
+    component.confirmCtrl.setValue('password123');
     component.submit();
     expect(authStoreMock.register).toHaveBeenCalledWith({
       email: 'alice@example.com',
@@ -121,7 +123,7 @@ describe('RegisterComponent', () => {
     stateSubject.next({ ...initialState, registerError: 'Email already in use.' });
     fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.field-error-banner')).toBeTruthy();
+    expect(el.querySelector('.error-banner')).toBeTruthy();
     expect(el.textContent).toContain('Email already in use.');
   });
 

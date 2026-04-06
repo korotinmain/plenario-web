@@ -91,11 +91,9 @@ describe('SettingsStore', () => {
       const s = await firstValueFrom(store.state$);
       expect(s.passwordSuccess).toBe(true);
       expect(s.passwordSaving).toBe(false);
-      expect(snackBarMock.open).toHaveBeenCalledWith(
-        'Password changed successfully.',
-        'Dismiss',
-        { duration: 4000 },
-      );
+      expect(snackBarMock.open).toHaveBeenCalledWith('Password changed successfully.', 'Dismiss', {
+        duration: 4000,
+      });
     });
 
     it('should set passwordError on failure', async () => {
@@ -118,14 +116,10 @@ describe('SettingsStore', () => {
   describe('clearPasswordState()', () => {
     it('should clear passwordError and passwordSuccess', async () => {
       setup({
-        changePassword: vi
-          .fn()
-          .mockReturnValue(throwError(() => ({ error: { message: 'err' } }))),
+        changePassword: vi.fn().mockReturnValue(throwError(() => ({ error: { message: 'err' } }))),
       });
       try {
-        await firstValueFrom(
-          store.changePassword({ currentPassword: 'x', newPassword: 'y12345' }),
-        );
+        await firstValueFrom(store.changePassword({ currentPassword: 'x', newPassword: 'y12345' }));
       } catch {}
       store.clearPasswordState();
       const s = await firstValueFrom(store.state$);

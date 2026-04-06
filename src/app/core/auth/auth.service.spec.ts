@@ -50,12 +50,15 @@ describe('AuthService', () => {
   });
 
   describe('bootstrapSession()', () => {
+    beforeEach(() => localStorage.setItem('pln_access_token', 'test-token'));
+    afterEach(() => localStorage.removeItem('pln_access_token'));
+
     it('should set user and mark initialized on 200 response', async () => {
       const bootstrap$ = service.bootstrapSession();
       const promise = firstValueFrom(bootstrap$);
 
       const req = httpMock.expectOne(`${environment.apiBaseUrl}/auth/me`);
-      expect(req.request.withCredentials).toBe(true);
+      expect(req.request.method).toBe('GET');
       req.flush(mockUser);
 
       await promise;

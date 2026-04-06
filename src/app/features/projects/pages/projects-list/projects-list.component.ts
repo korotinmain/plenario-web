@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,11 +24,13 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_CLASSES: Record<string, string> = {
-  active: 'status-badge--active',
-  on_hold: 'status-badge--hold',
-  completed: 'status-badge--done',
-  archived: 'status-badge--archived',
+  active: 'status--active',
+  on_hold: 'status--hold',
+  completed: 'status--done',
+  archived: 'status--archived',
 };
+
+type FilterKey = 'all' | 'active' | 'on_hold' | 'completed' | 'archived';
 
 @Component({
   selector: 'app-projects-list',
@@ -51,13 +53,30 @@ export class ProjectsListComponent implements OnInit {
   readonly store = inject(ProjectsStore);
   private readonly dialog = inject(MatDialog);
 
-  readonly projects = toSignal(this.store.state$.pipe(map((s) => s.projects)), {
-    initialValue: [],
-  });
-  readonly loading = toSignal(this.store.state$.pipe(map((s) => s.loading)), {
-    initialValue: false,
-  });
+  readonly allProjects = toSignal(this.store.state$.pipe(map((s) => s.projects)), { initialValue: [] });
+  readonly loading = toSignal(this.store.state$.pipe(map((s) => s.loading)), { initialValue: false });
   readonly error = toSignal(this.store.state$.pipe(map((s) => s.error)), { initialValue: null });
+
+  readonly activeFilter = signal<FilterKey>('all');
+
+  readonly filteredProjects = computed(() => {
+    const f = this.activeFilter();
+    const all = this.allProjects();
+    return f === 'all' ? all : all.filter((p) => p.status === f);
+  });
+
+  readonly filters: { key: FilterKey; label: string }[] = [
+    { key: 'all',       label: 'All' },
+    { key: 'active',    label: 'Active' },
+    { key: 'on_hold',   label: 'On hold' },
+    { key: 'completed', label: 'Completed' },
+    { key: 'archived',  label: 'Archived' },
+  ];
+
+  countFor(key: FilterKey): number {
+    const all = this.allProjects();
+    return key === 'all' ? all.length : all.filter((p) => p.status === key).length;
+  }
 
   readonly statusLabel = (status: string) => STATUS_LABELS[status] ?? status;
   readonly statusClass = (status: string) => STATUS_CLASSES[status] ?? '';
@@ -78,3 +97,4 @@ export class ProjectsListComponent implements OnInit {
     this.dialog.open(DeleteProjectDialogComponent, { data: project });
   }
 }
+

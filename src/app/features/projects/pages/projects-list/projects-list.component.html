@@ -1,29 +1,36 @@
-<app-page-header title="Projects" subtitle="Manage your projects">
+<app-page-header title="Projects" subtitle="Manage and track all your projects">
   <button mat-flat-button (click)="openCreate()">
     <mat-icon>add</mat-icon>
     New project
   </button>
 </app-page-header>
 
+<!-- Filter tabs -->
+<div class="filter-bar">
+  @for (f of filters; track f.key) {
+    <button
+      class="filter-tab"
+      [class.filter-tab--active]="activeFilter() === f.key"
+      (click)="activeFilter.set(f.key)"
+    >
+      {{ f.label }}
+      <span class="filter-tab__count">{{ countFor(f.key) }}</span>
+    </button>
+  }
+</div>
+
+<!-- States -->
 @if (loading()) {
   <div class="loading-center">
     <mat-spinner diameter="40" />
   </div>
 } @else if (error()) {
   <div class="error-banner">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
-        stroke="currentColor"
-        stroke-width="1.75"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
+    <mat-icon class="error-banner__icon">warning_amber</mat-icon>
     <span>{{ error() }}</span>
     <button mat-stroked-button (click)="store.load()">Retry</button>
   </div>
-} @else if (projects().length === 0) {
+} @else if (allProjects().length === 0) {
   <app-empty-state
     icon="folder_open"
     title="No projects yet"
@@ -34,47 +41,50 @@
       New project
     </button>
   </app-empty-state>
+} @else if (filteredProjects().length === 0) {
+  <app-empty-state
+    icon="filter_alt_off"
+    title="No matching projects"
+    message="No projects found for this filter."
+  >
+    <button mat-stroked-button (click)="activeFilter.set('all')">Clear filter</button>
+  </app-empty-state>
 } @else {
   <div class="projects-grid">
-    @for (project of projects(); track project.id) {
-      <div class="project-card">
-        <div
-          class="project-card__color-bar"
-          [style.background]="project.color ?? 'var(--mat-sys-primary)'"
-        ></div>
-
-        <div class="project-card__body">
-          <div class="project-card__top">
-            <a [routerLink]="['/projects', project.id]" class="project-card__name">
+    @for (project of filteredProjects(); track project.id) {
+      <div class="pcard">
+        <div class="pcard__accent" [style.background]="project.color ?? '#6366F1'"></div>
+        <div class="pcard__body">
+          <div class="pcard__top">
+            <a [routerLink]="['/projects', project.id]" class="pcard__name">
               {{ project.name }}
             </a>
-            <span class="status-badge" [class]="statusClass(project.status)">
-              {{ statusLabel(project.status) }}
-            </span>
+            <div class="pcard__right">
+              <span class="status" [class]="statusClass(project.status)">
+                {{ statusLabel(project.status) }}
+              </span>
+              <button mat-icon-button class="pcard__menu-btn" [matMenuTriggerFor]="menu" aria-label="Project actions">
+                <mat-icon>more_horiz</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="openEdit(project)">
+                  <mat-icon>edit</mat-icon><span>Edit</span>
+                </button>
+                <button mat-menu-item (click)="openDelete(project)" class="menu-danger">
+                  <mat-icon>delete_outline</mat-icon><span>Delete</span>
+                </button>
+              </mat-menu>
+            </div>
           </div>
-
           @if (project.description) {
-            <p class="project-card__desc">{{ project.description }}</p>
+            <p class="pcard__desc">{{ project.description }}</p>
           }
         </div>
-
-        <div class="project-card__footer">
-          <span class="project-card__date">
-            Created {{ project.createdAt | date: 'mediumDate' }}
+        <div class="pcard__footer">
+          <span class="pcard__date">
+            <mat-icon class="pcard__footer-icon">calendar_today</mat-icon>
+            {{ project.createdAt | date: 'MMM d, y' }}
           </span>
-          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Project actions">
-            <mat-icon>more_horiz</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="openEdit(project)">
-              <mat-icon>edit</mat-icon>
-              <span>Edit</span>
-            </button>
-            <button mat-menu-item (click)="openDelete(project)" class="menu-item--danger">
-              <mat-icon>delete_outline</mat-icon>
-              <span>Delete</span>
-            </button>
-          </mat-menu>
         </div>
       </div>
     }

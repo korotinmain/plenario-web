@@ -158,6 +158,11 @@ import { AuthService } from '../../../../core/auth/auth.service';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        animation: fadeInUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
       .page-hero {
         display: flex;
         align-items: flex-start;
@@ -215,7 +220,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
         font-size: 20px;
         width: 20px;
         height: 20px;
-        color: #6366f1;
+        color: #2563eb;
       }
       .section-icon--amber {
         color: #f59e0b;
@@ -233,7 +238,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
         width: 56px;
         height: 56px;
         border-radius: 14px;
-        background: linear-gradient(135deg, #7c3aed, #6366f1);
+        background: linear-gradient(135deg, #1d4ed8, #3b82f6);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -341,8 +346,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
         color: var(--pln-text-1, #18181b);
       }
       .provider-chip--email {
-        background: #f5f3ff;
-        border-color: #ddd6fe;
+        background: #eff6ff;
+        border-color: #bfdbfe;
         color: var(--pln-text-1, #18181b);
       }
       .provider-chip__icon {
@@ -351,7 +356,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
       }
       .provider-chip__icon--mat {
         font-size: 16px;
-        color: #6366f1;
+        color: #2563eb;
       }
 
       .coming-soon-note {
@@ -365,15 +370,15 @@ import { AuthService } from '../../../../core/auth/auth.service';
         font-size: 16px;
         width: 16px;
         height: 16px;
-        color: #6366f1;
+        color: #2563eb;
       }
       .coming-soon-chip {
         display: inline-flex;
         padding: 4px 12px;
         border-radius: 20px;
-        background: rgba(99, 102, 241, 0.08);
-        border: 1px solid rgba(99, 102, 241, 0.2);
-        color: #6366f1;
+        background: rgba(37, 99, 235, 0.08);
+        border: 1px solid rgba(37, 99, 235, 0.2);
+        color: #2563eb;
         font-size: 0.75rem;
         font-weight: 600;
       }
@@ -412,7 +417,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
         font-size: 20px;
         width: 20px;
         height: 20px;
-        color: #6366f1;
+        color: #2563eb;
         flex-shrink: 0;
         margin-top: 1px;
       }

@@ -23,13 +23,12 @@ import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-head
   `,
   styles: [
     `
+      :host {
+        display: block;
+        animation: fadeInUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
       .coming-soon-card {
-        background: #fff;
-        border: 1px solid var(--pln-card-border, #e4e4e7);
-        border-radius: 20px;
-        padding: 56px 40px;
-        display: flex;
-        flex-direction: column;
         align-items: center;
         text-align: center;
         max-width: 480px;

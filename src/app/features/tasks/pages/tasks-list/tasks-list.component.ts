@@ -36,18 +36,12 @@ import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-head
   `,
   styles: [
     `
-      .coming-soon-card {
-        background: #fff;
-        border: 1px solid var(--pln-card-border, #e4e4e7);
-        border-radius: 20px;
-        padding: 56px 40px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        max-width: 560px;
+      :host {
+        display: block;
+        animation: fadeInUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
       }
-      .cs-icon-ring {
+
+      .coming-soon-card {
         padding: 6px;
         border-radius: 24px;
         background: rgba(99, 102, 241, 0.06);
@@ -71,7 +65,7 @@ import { PageHeaderComponent } from '../../../../shared/ui/page-header/page-head
         font-size: 28px;
         width: 28px;
         height: 28px;
-        color: #6366f1;
+        color: #2563eb;
       }
       .cs-title {
         margin: 0 0 10px;

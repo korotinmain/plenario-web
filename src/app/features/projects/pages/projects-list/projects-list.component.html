@@ -21,8 +21,22 @@
 
 <!-- States -->
 @if (loading()) {
-  <div class="loading-center">
-    <mat-spinner diameter="40" />
+  <div class="projects-grid stagger-cards">
+    @for (_ of [1,2,3,4,5,6]; track $index) {
+      <div class="skeleton-card">
+        <div class="skeleton-card__accent"></div>
+        <div class="skeleton-card__row">
+          <div class="skeleton skeleton-title" style="width:55%"></div>
+          <div class="skeleton-card__pill"></div>
+        </div>
+        <div class="skeleton skeleton-text" style="width:80%"></div>
+        <div class="skeleton skeleton-text" style="width:60%"></div>
+        <div class="skeleton-card__footer">
+          <div class="skeleton-card__dot"></div>
+          <div class="skeleton skeleton-text" style="width:80px"></div>
+        </div>
+      </div>
+    }
   </div>
 } @else if (error()) {
   <div class="error-banner">
@@ -53,7 +67,7 @@
   <div class="projects-grid">
     @for (project of filteredProjects(); track project.id) {
       <div class="pcard">
-        <div class="pcard__accent" [style.background]="project.color ?? '#6366F1'"></div>
+        <div class="pcard__accent" [style.background]="project.color ?? '#2563EB'"></div>
         <div class="pcard__body">
           <div class="pcard__top">
             <a [routerLink]="['/projects', project.id]" class="pcard__name">

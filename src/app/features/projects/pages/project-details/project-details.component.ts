@@ -44,12 +44,12 @@ const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
       </div>
     } @else if (project()) {
       <div class="hero-card">
-        <div class="hero-card__banner" [style.background]="project()!.color ?? '#6366F1'">
+        <div class="hero-card__banner" [style.background]="project()!.color ?? '#2563EB'">
           <div class="hero-card__banner-overlay"></div>
         </div>
         <div class="hero-card__body">
           <div class="hero-card__top">
-            <div class="hero-card__icon-circle" [style.background]="project()!.color ?? '#6366F1'">
+            <div class="hero-card__icon-circle" [style.background]="project()!.color ?? '#2563EB'">
               <mat-icon>folder_open</mat-icon>
             </div>
             <div class="hero-card__actions">
@@ -91,6 +91,11 @@ const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
   `,
   styles: [
     `
+      :host {
+        display: block;
+        animation: fadeInUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
       .back-nav {
         display: inline-flex;
         align-items: center;
@@ -261,7 +266,7 @@ const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
         font-size: 18px;
         width: 18px;
         height: 18px;
-        color: #6366f1;
+        color: #2563eb;
       }
       .tasks-coming-soon {
         display: flex;
@@ -274,13 +279,13 @@ const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
         width: 40px;
         height: 40px;
         border-radius: 10px;
-        background: rgba(99, 102, 241, 0.1);
+        background: rgba(37, 99, 235, 0.1);
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
         mat-icon {
-          color: #6366f1;
+          color: #2563eb;
           font-size: 20px;
           width: 20px;
           height: 20px;

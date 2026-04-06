@@ -3,5 +3,6 @@
 
 @forward 'styles/theme'; // Material theme, base HTML/body/a resets
 @forward 'styles/tokens'; // Design tokens (:root CSS vars) + utility classes
+@forward 'styles/animations'; // Keyframes, skeleton, stagger utilities
 @forward 'styles/form-fields'; // mat-form-field (outlined) premium overrides
 @forward 'styles/auth'; // Auth pages shared styles (.auth-page scope)

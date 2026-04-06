@@ -32,8 +32,8 @@
   --pln-sidebar-text-hover: rgba(255, 255, 255, 0.78);
   --pln-sidebar-text-active: rgba(255, 255, 255, 0.96);
   --pln-sidebar-item-hover: rgba(255, 255, 255, 0.05);
-  --pln-sidebar-item-active-bg: rgba(99, 102, 241, 0.16);
-  --pln-sidebar-item-active-color: #a5b4fc;
+  --pln-sidebar-item-active-bg: rgba(37, 99, 235, 0.18);
+  --pln-sidebar-item-active-color: #93c5fd;
   --pln-sidebar-section-label: rgba(255, 255, 255, 0.24);
 
   // ── Content area ──────────────────────────────────────────────────────────
@@ -63,12 +63,12 @@
   --pln-status-archived-border: #e4e4e7;
 
   // ── Gradient presets ──────────────────────────────────────────────────────
-  --pln-grad-violet: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  --pln-grad-violet: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
   --pln-grad-emerald: linear-gradient(135deg, #059669 0%, #34d399 100%);
-  --pln-grad-blue: linear-gradient(135deg, #1d4ed8 0%, #60a5fa 100%);
+  --pln-grad-blue: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
   --pln-grad-amber: linear-gradient(135deg, #d97706 0%, #fcd34d 100%);
   --pln-grad-rose: linear-gradient(135deg, #be123c 0%, #fb7185 100%);
-  --pln-grad-brand: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --pln-grad-brand: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
 }
 
 // ── Utility ──────────────────────────────────────────────────────────────────

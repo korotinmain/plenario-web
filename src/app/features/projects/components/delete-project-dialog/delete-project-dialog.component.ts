@@ -11,7 +11,7 @@ import { Project } from '../../models/project.models';
   imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="dialog-shell">
+    <div class="dialog-shell dialog-enter">
       <div class="dialog-header">
         <div class="dialog-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">

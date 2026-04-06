@@ -37,13 +37,21 @@ const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="dialog-shell">
+    <div class="dialog-shell dialog-enter">
       <div class="dialog-header">
-        <h2 class="dialog-title">Edit project</h2>
-        <p class="dialog-sub">
-          Update the details for <strong>{{ project.name }}</strong
-          >.
-        </p>
+        <div class="dialog-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="dialog-title">Edit project</h2>
+          <p class="dialog-sub">
+            Update the details for <strong>{{ project.name }}</strong
+            >.
+          </p>
+        </div>
       </div>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="dialog-body">
@@ -129,7 +137,22 @@ const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
       }
 
       .dialog-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
         padding: 24px 24px 0;
+      }
+
+      .dialog-icon {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: rgba(37, 99, 235, 0.1);
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .dialog-title {

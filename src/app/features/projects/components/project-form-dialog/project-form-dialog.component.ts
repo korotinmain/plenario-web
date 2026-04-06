@@ -30,10 +30,17 @@ const PROJECT_COLORS = [
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="dialog-shell">
+    <div class="dialog-shell dialog-enter">
       <div class="dialog-header">
-        <h2 class="dialog-title">New project</h2>
-        <p class="dialog-sub">Fill in the details to create your project.</p>
+        <div class="dialog-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="dialog-title">New project</h2>
+          <p class="dialog-sub">Fill in the details to create your project.</p>
+        </div>
       </div>
 
       <form [formGroup]="form" (ngSubmit)="submit()" class="dialog-body">
@@ -118,7 +125,22 @@ const PROJECT_COLORS = [
       }
 
       .dialog-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
         padding: 24px 24px 0;
+      }
+
+      .dialog-icon {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: rgba(37, 99, 235, 0.1);
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .dialog-title {

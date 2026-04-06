@@ -58,7 +58,7 @@ import { MatIconModule } from '@angular/material/icon';
         font-size: 30px;
         width: 30px;
         height: 30px;
-        color: #6366f1;
+        color: #2563eb;
         opacity: 0.8;
       }
 

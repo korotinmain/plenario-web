@@ -67,10 +67,10 @@ import { MatIconModule } from '@angular/material/icon';
             color: var(--pln-text-1);
           }
           .card-icon-wrap {
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(37, 99, 235, 0.1);
           }
           .card-icon {
-            color: #6366f1;
+            color: #2563eb;
           }
         }
 

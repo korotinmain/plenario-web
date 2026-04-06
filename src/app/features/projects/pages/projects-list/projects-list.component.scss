@@ -1,3 +1,8 @@
+:host {
+  display: block;
+  animation: fadeInUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 // Filter bar
 .filter-bar {
   display: flex;
@@ -34,7 +39,7 @@
   }
 
   &--active {
-    background: #6366f1;
+    background: #2563eb;
     color: #fff;
     font-weight: 600;
 
@@ -83,7 +88,7 @@
       0 4px 16px rgba(0, 0, 0, 0.08),
       0 12px 32px rgba(0, 0, 0, 0.06);
     transform: translateY(-2px);
-    border-color: #c7d2fe;
+    border-color: #bfdbfe;
   }
 
   &__accent {
@@ -123,7 +128,7 @@
     line-height: 1.35;
     letter-spacing: -0.015em;
     &:hover {
-      color: #6366f1;
+      color: #2563eb;
       text-decoration: none;
     }
   }

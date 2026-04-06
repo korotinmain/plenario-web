@@ -1,0 +1,132 @@
+// Global animations & skeleton utilities
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+// ── Page entrance ─────────────────────────────────────────────────────────────
+.page-enter {
+  animation: fadeInUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+// ── Staggered card grid ───────────────────────────────────────────────────────
+.stagger-cards {
+  > * {
+    animation: fadeInUp 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    @for $i from 1 through 12 {
+      &:nth-child(#{$i}) { animation-delay: #{($i - 1) * 0.05}s; }
+    }
+  }
+}
+
+// ── Dialog entrance (apply to .dialog-shell) ──────────────────────────────────
+.dialog-enter {
+  animation: scaleIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+// ── Skeleton loader ───────────────────────────────────────────────────────────
+%skeleton-base {
+  background: linear-gradient(90deg, #f0f0f2 25%, #e4e4e8 50%, #f0f0f2 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: 8px;
+}
+
+.skeleton {
+  @extend %skeleton-base;
+}
+
+.skeleton-text {
+  @extend %skeleton-base;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  @extend %skeleton-base;
+  height: 22px;
+  border-radius: 6px;
+}
+
+.skeleton-card {
+  background: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+
+  &__accent {
+    @extend %skeleton-base;
+    height: 4px;
+    border-radius: 0;
+    margin: -20px -20px 8px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__pill {
+    @extend %skeleton-base;
+    height: 20px;
+    width: 64px;
+    border-radius: 20px;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f2;
+  }
+
+  &__dot {
+    @extend %skeleton-base;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+}
+
+.skeleton-stat-card {
+  @extend %skeleton-base;
+  border-radius: 16px;
+  height: 88px;
+}
+
+// ── Button press feedback ─────────────────────────────────────────────────────
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-flat-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button {
+  &:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+}

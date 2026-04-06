@@ -29,32 +29,40 @@ import { AuthService } from '../../../../core/auth/auth.service';
     </div>
 
     <!-- ── Stat cards ─────────────────────────────────────────────────────── -->
-    <div class="stats-grid">
-      <app-stat-card
-        label="All projects"
-        [value]="totalProjects()"
-        icon="folder_open"
-        gradient="violet"
-      />
-      <app-stat-card
-        label="Active"
-        [value]="activeProjects()"
-        icon="play_circle"
-        gradient="emerald"
-      />
-      <app-stat-card
-        label="Completed"
-        [value]="completedProjects()"
-        icon="check_circle"
-        gradient="blue"
-      />
-      <app-stat-card
-        label="On hold"
-        [value]="onHoldProjects()"
-        icon="pause_circle"
-        gradient="amber"
-      />
-    </div>
+    @if (loading()) {
+      <div class="stats-grid">
+        @for (_ of [1,2,3,4]; track $index) {
+          <div class="skeleton-stat-card"></div>
+        }
+      </div>
+    } @else {
+      <div class="stats-grid stagger-cards">
+        <app-stat-card
+          label="All projects"
+          [value]="totalProjects()"
+          icon="folder_open"
+          gradient="violet"
+        />
+        <app-stat-card
+          label="Active"
+          [value]="activeProjects()"
+          icon="play_circle"
+          gradient="emerald"
+        />
+        <app-stat-card
+          label="Completed"
+          [value]="completedProjects()"
+          icon="check_circle"
+          gradient="blue"
+        />
+        <app-stat-card
+          label="On hold"
+          [value]="onHoldProjects()"
+          icon="pause_circle"
+          gradient="amber"
+        />
+      </div>
+    }
 
     <!-- ── Bottom grid ────────────────────────────────────────────────────── -->
     <div class="bottom-grid">
@@ -67,7 +75,17 @@ import { AuthService } from '../../../../core/auth/auth.service';
             <mat-icon class="panel-link-icon">arrow_forward</mat-icon>
           </a>
         </div>
-        @if (recentProjects().length === 0) {
+        @if (loading()) {
+          <div class="project-list">
+            @for (_ of [1,2,3,4,5]; track $index) {
+              <div class="project-row-skeleton">
+                <div class="skeleton" style="width:10px;height:10px;border-radius:50%;flex-shrink:0"></div>
+                <div class="skeleton skeleton-text" style="flex:1;max-width:200px"></div>
+                <div class="skeleton" style="width:60px;height:20px;border-radius:20px"></div>
+              </div>
+            }
+          </div>
+        } @else if (recentProjects().length === 0) {
           <div class="panel-empty">
             <mat-icon class="panel-empty-icon">folder_open</mat-icon>
             <span>No projects yet — create your first one.</span>
@@ -76,7 +94,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
           <div class="project-list">
             @for (p of recentProjects(); track p.id) {
               <a [routerLink]="['/projects', p.id]" class="project-row">
-                <span class="project-row__dot" [style.background]="p.color ?? '#6366F1'"></span>
+                <span class="project-row__dot" [style.background]="p.color ?? '#2563EB'"></span>
                 <span class="project-row__name">{{ p.name }}</span>
                 <span class="pstatus" [class]="'pstatus--' + p.status">
                   {{ statusLabel(p.status) }}
@@ -129,6 +147,11 @@ import { AuthService } from '../../../../core/auth/auth.service';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        animation: fadeInUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
       // ── Hero ───────────────────────────────────────────────────────────────
       .hero {
         display: flex;
@@ -213,12 +236,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
         gap: 3px;
         font-size: 0.8125rem;
         font-weight: 600;
-        color: #6366f1;
-        text-decoration: none;
-
-        &:hover {
-          text-decoration: underline;
-        }
+        color: #2563eb;
       }
 
       .panel-link-icon {
@@ -247,6 +265,15 @@ import { AuthService } from '../../../../core/auth/auth.service';
       .project-list {
         display: flex;
         flex-direction: column;
+      }
+
+      .project-row-skeleton {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 22px;
+        border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
+        &:last-child { border-bottom: none; }
       }
 
       .project-row {
@@ -332,7 +359,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
         &:hover {
           background: #f9f9fb;
           .qa-arrow {
-            color: #6366f1;
+            color: #2563eb;
             transform: translateX(2px);
           }
         }
@@ -354,9 +381,9 @@ import { AuthService } from '../../../../core/auth/auth.service';
         }
 
         &--violet {
-          background: rgba(99, 102, 241, 0.1);
+          background: rgba(37, 99, 235, 0.1);
           mat-icon {
-            color: #6366f1;
+            color: #2563eb;
           }
         }
         &--blue {
@@ -413,6 +440,10 @@ export class DashboardComponent implements OnInit {
 
   private readonly projects = toSignal(this.store.state$.pipe(map((s) => s.projects)), {
     initialValue: [],
+  });
+
+  readonly loading = toSignal(this.store.state$.pipe(map((s) => s.loading)), {
+    initialValue: true,
   });
 
   readonly totalProjects = computed(() => this.projects().length);

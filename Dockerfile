@@ -10,7 +10,9 @@ COPY . .
 # Bake a placeholder — replaced at runtime by the entrypoint script
 RUN mkdir -p src/environments && \
     printf "export const environment = {\n  production: true,\n  apiBaseUrl: '__API_BASE_URL__',\n};\n" \
-    > src/environments/environment.production.ts
+    > src/environments/environment.production.ts && \
+    printf "export const environment = {\n  production: false,\n  apiBaseUrl: '__API_BASE_URL__',\n};\n" \
+    > src/environments/environment.ts
 RUN npm run build -- --no-progress 2>&1
 
 # Stage 2: Serve

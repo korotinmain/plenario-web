@@ -97,7 +97,7 @@ describe('TasksApiService', () => {
       const req = httpMock.expectOne(`${base}/t1`);
       expect(req.request.method).toBe('DELETE');
       req.flush(null);
-      expect(completed).toBeTrue();
+      expect(completed).toBe(true);
     });
   });
 });

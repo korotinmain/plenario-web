@@ -22,6 +22,12 @@ const initialState: AuthStoreState = {
   resendLoading: false,
   resendSuccess: false,
   resendError: null,
+  forgotPasswordLoading: false,
+  forgotPasswordError: null,
+  forgotPasswordSuccess: false,
+  resetPasswordLoading: false,
+  resetPasswordError: null,
+  resetPasswordSuccess: false,
 };
 
 describe('RegisterComponent', () => {

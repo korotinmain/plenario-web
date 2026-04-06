@@ -168,24 +168,24 @@ Use this file to track increment progress. Update status as work is completed.
 
 ---
 
-## Increment 6 — Dashboard and Settings [ ]
+## Increment 6 — Dashboard and Settings [x]
 
 ### Deliverables
 
-- [ ] Dashboard page — greeting, date, summary cards, today/upcoming blocks, quick actions
-- [ ] Dashboard API/store for summary data
-- [ ] Settings page — profile, account, security sections
-- [ ] Profile form — name, timezone
-- [ ] Account info block — email, verification status, linked providers
-- [ ] Security section — change password form (credentials users only)
-- [ ] Settings API service and store
+- [x] Dashboard page — greeting, date, summary cards, today/upcoming blocks, quick actions
+- [x] Dashboard API/store for summary data
+- [x] Settings page — profile, account, security sections
+- [x] Profile form — name, timezone
+- [x] Account info block — email, verification status, linked providers
+- [x] Security section — change password form (credentials users only)
+- [x] Settings API service and store
 
 ### Tests
 
-- [ ] Dashboard state tests
-- [ ] Settings service/store tests
-- [ ] Change password form tests
-- [ ] Account state rendering tests
+- [x] Dashboard state tests
+- [x] Settings service/store tests
+- [x] Change password form tests
+- [x] Account state rendering tests
 
 ---
 

@@ -26,15 +26,16 @@
   --pln-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.14), 0 8px 16px rgba(0, 0, 0, 0.08);
 
   // ── Sidebar (dark) ────────────────────────────────────────────────────────
-  --pln-sidebar-bg: #09090b;
-  --pln-sidebar-border: rgba(255, 255, 255, 0.07);
-  --pln-sidebar-text: rgba(255, 255, 255, 0.48);
-  --pln-sidebar-text-hover: rgba(255, 255, 255, 0.78);
+  --pln-sidebar-bg: #0d1117;
+  --pln-sidebar-border: rgba(48, 54, 61, 0.9);
+  --pln-sidebar-text: rgba(125, 133, 144, 1);
+  --pln-sidebar-text-hover: rgba(201, 209, 217, 0.92);
   --pln-sidebar-text-active: rgba(255, 255, 255, 0.96);
-  --pln-sidebar-item-hover: rgba(255, 255, 255, 0.05);
-  --pln-sidebar-item-active-bg: rgba(37, 99, 235, 0.18);
-  --pln-sidebar-item-active-color: #93c5fd;
-  --pln-sidebar-section-label: rgba(255, 255, 255, 0.24);
+  --pln-sidebar-item-hover: rgba(177, 186, 196, 0.06);
+  --pln-sidebar-item-active-bg: rgba(37, 99, 235, 0.14);
+  --pln-sidebar-item-active-color: #7ca9f5;
+  --pln-sidebar-section-label: rgba(110, 118, 129, 0.7);
+  --pln-sidebar-accent: #3b82f6;
 
   // ── Content area ──────────────────────────────────────────────────────────
   --pln-page-bg: #f4f4f5;

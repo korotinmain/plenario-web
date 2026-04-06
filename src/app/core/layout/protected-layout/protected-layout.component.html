@@ -29,6 +29,7 @@
           class="nav-item"
           [routerLink]="item.route"
           routerLinkActive="nav-item--active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/projects' ? false : false }"
           matRipple
           [matRippleColor]="'rgba(165,180,252,0.08)'"
           [attr.aria-label]="item.label"
@@ -38,6 +39,56 @@
           </span>
           <span class="nav-item__label">{{ item.label }}</span>
         </a>
+
+        @if (item.route === '/projects') {
+          <!-- Projects sub-panel -->
+          <div class="projects-panel">
+            <div class="projects-panel__header">
+              <span class="projects-panel__title">My Projects</span>
+              <button
+                class="projects-panel__btn"
+                mat-icon-button
+                matTooltip="New project"
+                (click)="openNewProject(); $event.stopPropagation()"
+                aria-label="New project"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+              <button
+                class="projects-panel__btn projects-panel__btn--chevron"
+                mat-icon-button
+                [class.projects-panel__btn--rotated]="!projectsExpanded()"
+                (click)="toggleProjects()"
+                [attr.aria-label]="projectsExpanded() ? 'Collapse projects' : 'Expand projects'"
+              >
+                <mat-icon>expand_more</mat-icon>
+              </button>
+            </div>
+
+            @if (projectsExpanded()) {
+              <div class="projects-panel__list">
+                @if (projects().length === 0) {
+                  <span class="projects-panel__empty">No projects yet</span>
+                } @else {
+                  @for (project of projects(); track project.id) {
+                    <a
+                      class="project-link"
+                      [routerLink]="['/projects', project.id]"
+                      routerLinkActive="project-link--active"
+                      matRipple
+                      [matRippleColor]="'rgba(165,180,252,0.06)'"
+                    >
+                      <span class="project-link__hash" [style.color]="project.color ?? '#3b82f6'"
+                        >#</span
+                      >
+                      <span class="project-link__name">{{ project.name }}</span>
+                    </a>
+                  }
+                }
+              </div>
+            }
+          </div>
+        }
       }
     </nav>
 

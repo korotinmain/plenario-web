@@ -1,13 +1,27 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+  signal,
+  computed,
+} from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, NgClass } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs/operators';
 import { ProjectsApiService } from '../../data-access/projects-api.service';
 import { EditProjectDialogComponent } from '../../components/edit-project-dialog/edit-project-dialog.component';
 import { Project, ProjectStatus } from '../../models/project.models';
+import { TasksStore } from '../../../tasks/data-access/tasks.store';
+import { TaskFormDialogComponent } from '../../../tasks/components/task-form-dialog/task-form-dialog.component';
+import { DeleteTaskDialogComponent } from '../../../tasks/components/delete-task-dialog/delete-task-dialog.component';
+import { Task, TaskStatus, TaskPriority } from '../../../tasks/models/task.models';
 
 const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
   active: { label: 'Active', cssClass: 'badge--active' },
@@ -26,6 +40,7 @@ const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatMenuModule,
   ],
   template: `
     <a routerLink="/projects" class="back-nav">
@@ -81,11 +96,81 @@ const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
           <h2 class="section-card__title">
             <mat-icon class="section-icon">task_alt</mat-icon>Tasks
           </h2>
+          <button mat-flat-button class="add-task-btn" (click)="openCreateTask()">
+            <mat-icon>add</mat-icon>New task
+          </button>
         </div>
-        <div class="tasks-coming-soon">
-          <div class="tcs-icon-wrap"><mat-icon>rocket_launch</mat-icon></div>
-          <p class="tcs-text">Task management for this project is coming in Increment 5.</p>
-        </div>
+
+        @if (tasksLoading()) {
+          @for (_ of [1, 2, 3]; track $index) {
+            <div class="task-row-skeleton">
+              <div class="skeleton skeleton-circle"></div>
+              <div class="skeleton-lines">
+                <div class="skeleton skeleton-text" style="width:55%"></div>
+                <div
+                  class="skeleton skeleton-text"
+                  style="width:30%;height:10px;margin-top:4px"
+                ></div>
+              </div>
+              <div
+                class="skeleton skeleton-text"
+                style="width:60px;height:20px;border-radius:10px;margin-left:auto"
+              ></div>
+            </div>
+          }
+        } @else if (projectTasks().length === 0) {
+          <div class="tasks-empty">
+            <div class="tcs-icon-wrap"><mat-icon>task_alt</mat-icon></div>
+            <div>
+              <p class="tcs-text">No tasks for this project yet.</p>
+              <button mat-button class="tcs-action" (click)="openCreateTask()">
+                Create first task
+              </button>
+            </div>
+          </div>
+        } @else {
+          @for (task of projectTasks(); track task.id) {
+            <div class="task-row" [class.task-row--done]="task.status === 'DONE'">
+              <button
+                class="status-btn"
+                [class]="'status-btn--' + task.status"
+                (click)="cycleStatus(task)"
+                [title]="task.status"
+              >
+                @if (task.status === 'DONE') {
+                  <mat-icon>check_circle</mat-icon>
+                } @else if (task.status === 'IN_PROGRESS') {
+                  <mat-icon>pending</mat-icon>
+                } @else {
+                  <mat-icon>radio_button_unchecked</mat-icon>
+                }
+              </button>
+              <div class="task-info">
+                <span class="task-title">{{ task.title }}</span>
+                @if (task.dueDate) {
+                  <span class="task-due" [class.task-due--overdue]="isOverdue(task)">
+                    <mat-icon class="due-icon">schedule</mat-icon>
+                    {{ task.dueDate | date: 'MMM d' }}
+                  </span>
+                }
+              </div>
+              <span class="priority-chip priority-chip--{{ task.priority.toLowerCase() }}">{{
+                task.priority
+              }}</span>
+              <button mat-icon-button [matMenuTriggerFor]="taskMenu" class="task-more-btn">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #taskMenu="matMenu">
+                <button mat-menu-item (click)="openEditTask(task)">
+                  <mat-icon>edit</mat-icon>Edit
+                </button>
+                <button mat-menu-item class="danger-item" (click)="openDeleteTask(task)">
+                  <mat-icon>delete</mat-icon>Delete
+                </button>
+              </mat-menu>
+            </div>
+          }
+        }
       </div>
     }
   `,
@@ -251,6 +336,9 @@ const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
       .section-card__header {
         padding: 16px 24px;
         border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
       .section-card__title {
         margin: 0;
@@ -268,7 +356,154 @@ const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
         height: 18px;
         color: #2563eb;
       }
-      .tasks-coming-soon {
+      .add-task-btn {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        height: 32px;
+        line-height: 32px;
+        padding: 0 12px;
+        border-radius: 8px;
+        background: #2563eb;
+        color: #fff;
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          margin-right: 2px;
+        }
+      }
+      .task-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
+        transition: background 0.1s;
+        &:last-child {
+          border-bottom: none;
+        }
+        &:hover {
+          background: rgba(0, 0, 0, 0.02);
+        }
+        &--done .task-title {
+          text-decoration: line-through;
+          color: var(--pln-text-3, #71717a);
+        }
+      }
+      .task-row-skeleton {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+      .skeleton-circle {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .skeleton-lines {
+        flex: 1;
+      }
+      .status-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        transition: background 0.1s;
+        mat-icon {
+          font-size: 22px;
+          width: 22px;
+          height: 22px;
+        }
+        &--TODO mat-icon {
+          color: #a1a1aa;
+        }
+        &--IN_PROGRESS mat-icon {
+          color: #2563eb;
+        }
+        &--DONE mat-icon {
+          color: #059669;
+        }
+        &:hover {
+          background: rgba(0, 0, 0, 0.05);
+        }
+      }
+      .task-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .task-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--pln-text-1, #18181b);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .task-due {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 0.75rem;
+        color: var(--pln-text-3, #71717a);
+        white-space: nowrap;
+        flex-shrink: 0;
+        &--overdue {
+          color: #ef4444;
+        }
+        .due-icon {
+          font-size: 11px;
+          width: 11px;
+          height: 11px;
+        }
+      }
+      .priority-chip {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 2px 8px;
+        border-radius: 10px;
+        white-space: nowrap;
+        flex-shrink: 0;
+        &--low {
+          background: #f0fdf4;
+          color: #16a34a;
+          border: 1px solid #bbf7d0;
+        }
+        &--medium {
+          background: #fffbeb;
+          color: #b45309;
+          border: 1px solid #fde68a;
+        }
+        &--high {
+          background: #fef2f2;
+          color: #dc2626;
+          border: 1px solid #fecaca;
+        }
+      }
+      .task-more-btn {
+        flex-shrink: 0;
+      }
+      .danger-item {
+        color: #ef4444;
+      }
+      .tasks-empty {
         display: flex;
         align-items: center;
         gap: 14px;
@@ -292,9 +527,14 @@ const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
         }
       }
       .tcs-text {
-        margin: 0;
+        margin: 0 0 4px;
         font-size: 0.875rem;
         line-height: 1.55;
+      }
+      .tcs-action {
+        font-size: 0.8125rem;
+        color: #2563eb;
+        padding: 0;
       }
       .loading-state {
         display: flex;
@@ -348,13 +588,39 @@ export class ProjectDetailsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(ProjectsApiService);
   private readonly dialog = inject(MatDialog);
+  private readonly tasksStore = inject(TasksStore);
 
   readonly project = signal<Project | null>(null);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
 
+  private readonly allTasks = toSignal(this.tasksStore.state$.pipe(map((s) => s.tasks)), {
+    initialValue: [] as Task[],
+  });
+  readonly tasksLoading = toSignal(this.tasksStore.state$.pipe(map((s) => s.loading)), {
+    initialValue: true,
+  });
+  readonly projectTasks = computed(() => {
+    const id = this.project()?.id;
+    return this.allTasks().filter((t) => t.projectId === id);
+  });
+
   statusInfo(status: ProjectStatus) {
     return STATUS_MAP[status] ?? { label: status, cssClass: '' };
+  }
+
+  isOverdue(task: Task): boolean {
+    if (!task.dueDate || task.status === 'DONE') return false;
+    return task.dueDate.slice(0, 10) < new Date().toISOString().slice(0, 10);
+  }
+
+  cycleStatus(task: Task): void {
+    const next: Record<TaskStatus, TaskStatus> = {
+      TODO: 'IN_PROGRESS',
+      IN_PROGRESS: 'DONE',
+      DONE: 'TODO',
+    };
+    this.tasksStore.update(task.id, { status: next[task.status] }).subscribe();
   }
 
   ngOnInit(): void {
@@ -369,6 +635,7 @@ export class ProjectDetailsComponent implements OnInit {
         this.loading.set(false);
       },
     });
+    this.tasksStore.load();
   }
 
   openEdit(): void {
@@ -379,6 +646,38 @@ export class ProjectDetailsComponent implements OnInit {
     });
     ref.afterClosed().subscribe((updated: Project | undefined) => {
       if (updated) this.project.set(updated);
+    });
+  }
+
+  openCreateTask(): void {
+    const ref = this.dialog.open(TaskFormDialogComponent, {
+      data: { task: null, defaultProjectId: this.project()?.id },
+      autoFocus: 'first-tabbable',
+      width: '520px',
+    });
+    ref.afterClosed().subscribe((created: Task | undefined) => {
+      if (created) this.tasksStore.load();
+    });
+  }
+
+  openEditTask(task: Task): void {
+    const ref = this.dialog.open(TaskFormDialogComponent, {
+      data: { task },
+      autoFocus: 'first-tabbable',
+      width: '520px',
+    });
+    ref.afterClosed().subscribe((updated: Task | undefined) => {
+      if (updated) this.tasksStore.load();
+    });
+  }
+
+  openDeleteTask(task: Task): void {
+    const ref = this.dialog.open(DeleteTaskDialogComponent, {
+      data: { task },
+      autoFocus: 'first-tabbable',
+    });
+    ref.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) this.tasksStore.delete(task.id).subscribe();
     });
   }
 }

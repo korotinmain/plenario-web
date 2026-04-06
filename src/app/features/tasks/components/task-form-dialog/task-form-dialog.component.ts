@@ -441,6 +441,8 @@ export class TaskFormDialogComponent {
   private readonly fb = inject(FormBuilder);
 
   readonly task: Task | undefined = inject(MAT_DIALOG_DATA)?.task;
+  readonly defaultProjectId: string | undefined = inject(MAT_DIALOG_DATA)?.defaultProjectId;
+  readonly defaultDueDate: string | undefined = inject(MAT_DIALOG_DATA)?.defaultDueDate;
   readonly isEdit = !!this.task;
 
   readonly statuses = STATUS_OPTIONS;
@@ -461,8 +463,10 @@ export class TaskFormDialogComponent {
       Validators.maxLength(200),
     ]),
     description: this.fb.nonNullable.control(this.task?.description ?? ''),
-    dueDate: this.fb.control<string | null>(this.task?.dueDate?.slice(0, 10) ?? null),
-    projectId: this.fb.control<string | null>(this.task?.projectId ?? null),
+    dueDate: this.fb.control<string | null>(this.task?.dueDate?.slice(0, 10) ?? this.defaultDueDate ?? null),
+    projectId: this.fb.control<string | null>(
+      this.task?.projectId ?? this.defaultProjectId ?? null,
+    ),
   });
 
   get titleCtrl() {

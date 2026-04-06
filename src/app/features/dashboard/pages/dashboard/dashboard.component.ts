@@ -5,9 +5,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import { StatCardComponent } from '../../../../shared/ui/stat-card/stat-card.component';
 import { ProjectsStore } from '../../../projects/data-access/projects.store';
+import { TasksStore } from '../../../tasks/data-access/tasks.store';
+import { TaskFormDialogComponent } from '../../../tasks/components/task-form-dialog/task-form-dialog.component';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { Task, TaskStatus } from '../../../tasks/models/task.models';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,22 +48,22 @@ import { AuthService } from '../../../../core/auth/auth.service';
           gradient="violet"
         />
         <app-stat-card
-          label="Active"
-          [value]="activeProjects()"
-          icon="play_circle"
-          gradient="emerald"
-        />
-        <app-stat-card
-          label="Completed"
-          [value]="completedProjects()"
-          icon="check_circle"
+          label="Open tasks"
+          [value]="openTasks()"
+          icon="task_alt"
           gradient="blue"
         />
         <app-stat-card
-          label="On hold"
-          [value]="onHoldProjects()"
-          icon="pause_circle"
+          label="Due today"
+          [value]="dueTodayCount()"
+          icon="schedule"
           gradient="amber"
+        />
+        <app-stat-card
+          label="Upcoming"
+          [value]="upcomingCount()"
+          icon="upcoming"
+          gradient="emerald"
         />
       </div>
     }
@@ -108,43 +112,57 @@ import { AuthService } from '../../../../core/auth/auth.service';
         }
       </div>
 
-      <!-- Quick actions -->
+      <!-- Today's tasks -->
       <div class="panel">
         <div class="panel-header">
-          <h2 class="panel-title">Quick actions</h2>
-        </div>
-        <div class="qa-list">
-          <a routerLink="/projects" class="qa-item">
-            <div class="qa-icon qa-icon--violet">
-              <mat-icon>folder_open</mat-icon>
-            </div>
-            <div class="qa-text">
-              <span class="qa-label">Projects</span>
-              <span class="qa-desc">Manage your projects</span>
-            </div>
-            <mat-icon class="qa-arrow">chevron_right</mat-icon>
-          </a>
-          <a routerLink="/tasks" class="qa-item">
-            <div class="qa-icon qa-icon--blue">
-              <mat-icon>task_alt</mat-icon>
-            </div>
-            <div class="qa-text">
-              <span class="qa-label">Tasks</span>
-              <span class="qa-desc">View and manage tasks</span>
-            </div>
-            <mat-icon class="qa-arrow">chevron_right</mat-icon>
-          </a>
-          <a routerLink="/settings" class="qa-item">
-            <div class="qa-icon qa-icon--slate">
-              <mat-icon>settings</mat-icon>
-            </div>
-            <div class="qa-text">
-              <span class="qa-label">Settings</span>
-              <span class="qa-desc">Account preferences</span>
-            </div>
-            <mat-icon class="qa-arrow">chevron_right</mat-icon>
+          <h2 class="panel-title">Today's tasks</h2>
+          <a routerLink="/tasks/today" class="panel-link">
+            View all
+            <mat-icon class="panel-link-icon">arrow_forward</mat-icon>
           </a>
         </div>
+        @if (tasksLoading()) {
+          <div class="task-list">
+            @for (_ of [1, 2, 3]; track $index) {
+              <div class="task-row-skeleton">
+                <div class="skeleton" style="width:22px;height:22px;border-radius:50%;flex-shrink:0"></div>
+                <div class="skeleton skeleton-text" style="flex:1;max-width:180px"></div>
+                <div class="skeleton" style="width:48px;height:18px;border-radius:10px"></div>
+              </div>
+            }
+          </div>
+        } @else if (todayTasks().length === 0) {
+          <div class="panel-empty">
+            <mat-icon class="panel-empty-icon">task_alt</mat-icon>
+            <div>
+              <p style="margin:0 0 6px;font-weight:600;color:var(--pln-text-1)">All clear!</p>
+              <span>No tasks due today.</span>
+            </div>
+          </div>
+        } @else {
+          <div class="task-list">
+            @for (task of todayTasks(); track task.id) {
+              <div class="task-row" [class.task-row--done]="task.status === 'DONE'">
+                <button class="status-btn status-btn--{{ task.status }}" (click)="cycleStatus(task)">
+                  @if (task.status === 'DONE') {
+                    <mat-icon>check_circle</mat-icon>
+                  } @else if (task.status === 'IN_PROGRESS') {
+                    <mat-icon>pending</mat-icon>
+                  } @else {
+                    <mat-icon>radio_button_unchecked</mat-icon>
+                  }
+                </button>
+                <span class="task-row__name">{{ task.title }}</span>
+                <span class="priority-chip priority-chip--{{ task.priority.toLowerCase() }}">{{ task.priority }}</span>
+              </div>
+            }
+          </div>
+          <div class="panel-footer">
+            <button mat-button class="panel-add-btn" (click)="openCreateTask()">
+              <mat-icon>add</mat-icon> New task for today
+            </button>
+          </div>
+        }
       </div>
     </div>
   `,
@@ -343,123 +361,142 @@ import { AuthService } from '../../../../core/auth/auth.service';
         }
       }
 
-      // ── Quick actions ──────────────────────────────────────────────────────
-      .qa-list {
+      // ── Task list (today panel) ────────────────────────────────────────────
+      .task-list {
         display: flex;
         flex-direction: column;
       }
 
-      .qa-item {
+      .task-row-skeleton {
         display: flex;
         align-items: center;
-        gap: 14px;
-        padding: 14px 20px;
-        text-decoration: none;
+        gap: 10px;
+        padding: 12px 22px;
         border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
-        transition: background 0.13s;
+        &:last-child { border-bottom: none; }
+      }
 
-        &:last-child {
-          border-bottom: none;
-        }
-        &:hover {
-          background: #f9f9fb;
-          .qa-arrow {
-            color: #2563eb;
-            transform: translateX(2px);
-          }
+      .task-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 18px;
+        border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
+        transition: background 0.12s;
+        &:last-child { border-bottom: none; }
+        &:hover { background: #f9f9fb; }
+        &--done .task-row__name { text-decoration: line-through; color: var(--pln-text-3, #71717a); }
+
+        &__name {
+          flex: 1;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: var(--pln-text-1, #18181b);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
 
-      .qa-icon {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
+      .status-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-
-        mat-icon {
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-        }
-
-        &--violet {
-          background: rgba(37, 99, 235, 0.1);
-          mat-icon {
-            color: #2563eb;
-          }
-        }
-        &--blue {
-          background: rgba(59, 130, 246, 0.1);
-          mat-icon {
-            color: #3b82f6;
-          }
-        }
-        &--slate {
-          background: rgba(100, 116, 139, 0.1);
-          mat-icon {
-            color: #64748b;
-          }
-        }
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        transition: background 0.1s;
+        mat-icon { font-size: 20px; width: 20px; height: 20px; }
+        &--TODO mat-icon { color: #a1a1aa; }
+        &--IN_PROGRESS mat-icon { color: #2563eb; }
+        &--DONE mat-icon { color: #059669; }
+        &:hover { background: rgba(0,0,0,0.05); }
       }
 
-      .qa-text {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
+      .priority-chip {
+        font-size: 0.625rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 2px 7px;
+        border-radius: 10px;
+        white-space: nowrap;
+        flex-shrink: 0;
+        &--low { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        &--medium { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+        &--high { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
       }
 
-      .qa-label {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--pln-text-1, #18181b);
+      .panel-footer {
+        padding: 8px 16px;
+        border-top: 1px solid var(--pln-card-border, #e4e4e7);
       }
 
-      .qa-desc {
+      .panel-add-btn {
         font-size: 0.8125rem;
-        color: var(--pln-text-3, #71717a);
+        color: #2563eb;
+        padding: 0 4px;
       }
 
-      .qa-arrow {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-        color: var(--pln-text-4, #a1a1aa);
-        transition:
-          color 0.13s,
-          transform 0.13s;
-      }
+
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
   private readonly store = inject(ProjectsStore);
+  private readonly tasksStore = inject(TasksStore);
+  private readonly dialog = inject(MatDialog);
   private readonly authService = inject(AuthService);
 
   readonly today = new Date();
+  readonly todayStr = new Date().toISOString().slice(0, 10);
   readonly user = toSignal(this.authService.user$);
 
   private readonly projects = toSignal(this.store.state$.pipe(map((s) => s.projects)), {
     initialValue: [],
   });
+  private readonly allTasks = toSignal(this.tasksStore.state$.pipe(map((s) => s.tasks)), {
+    initialValue: [] as Task[],
+  });
 
   readonly loading = toSignal(this.store.state$.pipe(map((s) => s.loading)), {
     initialValue: true,
   });
+  readonly tasksLoading = toSignal(this.tasksStore.state$.pipe(map((s) => s.loading)), {
+    initialValue: true,
+  });
 
   readonly totalProjects = computed(() => this.projects().length);
-  readonly activeProjects = computed(
-    () => this.projects().filter((p) => p.status === 'active').length,
+
+  readonly openTasks = computed(
+    () => this.allTasks().filter((t) => t.status === 'TODO' || t.status === 'IN_PROGRESS').length,
   );
-  readonly completedProjects = computed(
-    () => this.projects().filter((p) => p.status === 'completed').length,
+  readonly dueTodayCount = computed(
+    () =>
+      this.allTasks().filter(
+        (t) => t.dueDate?.slice(0, 10) === this.todayStr && t.status !== 'DONE',
+      ).length,
   );
-  readonly onHoldProjects = computed(
-    () => this.projects().filter((p) => p.status === 'on_hold').length,
+  readonly upcomingCount = computed(
+    () =>
+      this.allTasks().filter((t) => (t.dueDate?.slice(0, 10) ?? '') > this.todayStr && t.status !== 'DONE')
+        .length,
+  );
+
+  readonly todayTasks = computed(() =>
+    this.allTasks()
+      .filter((t) => t.dueDate?.slice(0, 10) === this.todayStr)
+      .sort((a, b) => {
+        const order: Record<TaskStatus, number> = { TODO: 0, IN_PROGRESS: 1, DONE: 2 };
+        return order[a.status] - order[b.status];
+      })
+      .slice(0, 8),
   );
 
   readonly recentProjects = computed(() =>
@@ -491,7 +528,26 @@ export class DashboardComponent implements OnInit {
       archived: 'Archived',
     })[status] ?? status;
 
+  cycleStatus(task: Task): void {
+    const next: Record<TaskStatus, TaskStatus> = {
+      TODO: 'IN_PROGRESS',
+      IN_PROGRESS: 'DONE',
+      DONE: 'TODO',
+    };
+    this.tasksStore.update(task.id, { status: next[task.status] }).subscribe();
+  }
+
+  openCreateTask(): void {
+    const todayDate = this.todayStr;
+    this.dialog.open(TaskFormDialogComponent, {
+      data: { task: null, defaultDueDate: todayDate },
+      autoFocus: 'first-tabbable',
+      width: '520px',
+    });
+  }
+
   ngOnInit(): void {
     this.store.load();
+    this.tasksStore.load();
   }
 }

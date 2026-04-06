@@ -145,25 +145,26 @@ Use this file to track increment progress. Update status as work is completed.
 
 ---
 
-## Increment 5 — Tasks [ ]
+## Increment 5 — Tasks [~]
 
 ### Deliverables
 
-- [ ] Tasks list page — full implementation
-- [ ] Today page — tasks due today
-- [ ] Upcoming page — future tasks sorted by date
-- [ ] Task create/edit flow
-- [ ] Task delete confirmation
-- [ ] Filters UI (project, status, priority)
-- [ ] Tasks API service
-- [ ] Tasks store
+- [x] `Task` model — `id, title, description, status, priority, dueDate, projectId, createdAt, updatedAt`
+- [x] `TaskStatus` type — `TODO | IN_PROGRESS | DONE`
+- [x] `TaskPriority` type — `LOW | MEDIUM | HIGH`
+- [x] `TasksApiService` — `getAll, getById, create, update, delete`
+- [x] `TasksStore` — `load, create, update, delete` with loading/error/saving state + snackbar feedback
+- [x] `TaskFormDialogComponent` — create/edit dialog with title, description, status, priority, due date, project
+- [x] `DeleteTaskDialogComponent` — confirmation dialog with task title
+- [x] `TasksListComponent` — full list with status+priority filter bar, task rows, skeleton loader, create/edit/delete, cycle-status click
+- [x] `TasksTodayComponent` — tasks due today, grouped by incomplete/done, empty state
+- [x] `TasksUpcomingComponent` — tasks with future due dates, grouped by date, empty state
+- [x] Status click shortcut — clicking status icon cycles TODO → IN_PROGRESS → DONE → TODO
 
 ### Tests
 
-- [ ] Tasks data-access tests
-- [ ] Store/filter logic tests
-- [ ] Task form tests
-- [ ] Today/upcoming view behavior tests
+- [x] `TasksApiService` spec — getAll, getById, create, update, delete (6 tests)
+- [x] `TasksStore` spec — load success/error/fallback, create/update/delete success and error paths (10 tests)
 
 ---
 

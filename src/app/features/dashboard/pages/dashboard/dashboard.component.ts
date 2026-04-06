@@ -58,7 +58,6 @@ import { AuthService } from '../../../../core/auth/auth.service';
 
     <!-- ── Bottom grid ────────────────────────────────────────────────────── -->
     <div class="bottom-grid">
-
       <!-- Recent projects -->
       <div class="panel">
         <div class="panel-header">
@@ -126,7 +125,6 @@ import { AuthService } from '../../../../core/auth/auth.service';
           </a>
         </div>
       </div>
-
     </div>
   `,
   styles: [
@@ -144,7 +142,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
         margin: 0 0 6px;
         font-size: 2rem;
         font-weight: 800;
-        color: var(--pln-text-1, #18181B);
+        color: var(--pln-text-1, #18181b);
         letter-spacing: -0.04em;
         line-height: 1.1;
       }
@@ -152,7 +150,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
       .hero-date {
         margin: 0;
         font-size: 0.875rem;
-        color: var(--pln-text-3, #71717A);
+        color: var(--pln-text-3, #71717a);
         font-weight: 500;
       }
 
@@ -187,7 +185,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
       // ── Panel (card) ───────────────────────────────────────────────────────
       .panel {
         background: var(--pln-card-bg, #fff);
-        border: 1px solid var(--pln-card-border, #E4E4E7);
+        border: 1px solid var(--pln-card-border, #e4e4e7);
         border-radius: 16px;
         box-shadow: var(--pln-card-shadow);
         overflow: hidden;
@@ -198,14 +196,14 @@ import { AuthService } from '../../../../core/auth/auth.service';
         align-items: center;
         justify-content: space-between;
         padding: 18px 22px 14px;
-        border-bottom: 1px solid var(--pln-card-border, #E4E4E7);
+        border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
       }
 
       .panel-title {
         margin: 0;
         font-size: 0.9375rem;
         font-weight: 700;
-        color: var(--pln-text-1, #18181B);
+        color: var(--pln-text-1, #18181b);
         letter-spacing: -0.02em;
       }
 
@@ -215,10 +213,12 @@ import { AuthService } from '../../../../core/auth/auth.service';
         gap: 3px;
         font-size: 0.8125rem;
         font-weight: 600;
-        color: #6366F1;
+        color: #6366f1;
         text-decoration: none;
 
-        &:hover { text-decoration: underline; }
+        &:hover {
+          text-decoration: underline;
+        }
       }
 
       .panel-link-icon {
@@ -232,7 +232,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
         align-items: center;
         gap: 10px;
         padding: 32px 22px;
-        color: var(--pln-text-3, #71717A);
+        color: var(--pln-text-3, #71717a);
         font-size: 0.875rem;
       }
 
@@ -255,11 +255,15 @@ import { AuthService } from '../../../../core/auth/auth.service';
         gap: 12px;
         padding: 13px 22px;
         text-decoration: none;
-        border-bottom: 1px solid var(--pln-card-border, #E4E4E7);
+        border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
         transition: background 0.13s;
 
-        &:last-child { border-bottom: none; }
-        &:hover { background: #F9F9FB; }
+        &:last-child {
+          border-bottom: none;
+        }
+        &:hover {
+          background: #f9f9fb;
+        }
 
         &__dot {
           width: 10px;
@@ -272,7 +276,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
           flex: 1;
           font-size: 0.875rem;
           font-weight: 600;
-          color: var(--pln-text-1, #18181B);
+          color: var(--pln-text-1, #18181b);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -289,10 +293,22 @@ import { AuthService } from '../../../../core/auth/auth.service';
         letter-spacing: 0.05em;
         white-space: nowrap;
 
-        &--active   { background: var(--pln-status-active-bg, #ECFDF5);   color: var(--pln-status-active-color, #059669); }
-        &--on_hold  { background: var(--pln-status-hold-bg, #FFFBEB);     color: var(--pln-status-hold-color, #B45309); }
-        &--completed{ background: var(--pln-status-done-bg, #EFF6FF);     color: var(--pln-status-done-color, #1D4ED8); }
-        &--archived { background: var(--pln-status-archived-bg, #F4F4F5); color: var(--pln-status-archived-color, #71717A); }
+        &--active {
+          background: var(--pln-status-active-bg, #ecfdf5);
+          color: var(--pln-status-active-color, #059669);
+        }
+        &--on_hold {
+          background: var(--pln-status-hold-bg, #fffbeb);
+          color: var(--pln-status-hold-color, #b45309);
+        }
+        &--completed {
+          background: var(--pln-status-done-bg, #eff6ff);
+          color: var(--pln-status-done-color, #1d4ed8);
+        }
+        &--archived {
+          background: var(--pln-status-archived-bg, #f4f4f5);
+          color: var(--pln-status-archived-color, #71717a);
+        }
       }
 
       // ── Quick actions ──────────────────────────────────────────────────────
@@ -307,13 +323,18 @@ import { AuthService } from '../../../../core/auth/auth.service';
         gap: 14px;
         padding: 14px 20px;
         text-decoration: none;
-        border-bottom: 1px solid var(--pln-card-border, #E4E4E7);
+        border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
         transition: background 0.13s;
 
-        &:last-child { border-bottom: none; }
+        &:last-child {
+          border-bottom: none;
+        }
         &:hover {
-          background: #F9F9FB;
-          .qa-arrow { color: #6366F1; transform: translateX(2px); }
+          background: #f9f9fb;
+          .qa-arrow {
+            color: #6366f1;
+            transform: translateX(2px);
+          }
         }
       }
 
@@ -326,11 +347,30 @@ import { AuthService } from '../../../../core/auth/auth.service';
         justify-content: center;
         flex-shrink: 0;
 
-        mat-icon { font-size: 20px; width: 20px; height: 20px; }
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
 
-        &--violet { background: rgba(99, 102, 241, 0.1); mat-icon { color: #6366F1; } }
-        &--blue   { background: rgba(59, 130, 246, 0.1); mat-icon { color: #3B82F6; } }
-        &--slate  { background: rgba(100, 116, 139, 0.1); mat-icon { color: #64748B; } }
+        &--violet {
+          background: rgba(99, 102, 241, 0.1);
+          mat-icon {
+            color: #6366f1;
+          }
+        }
+        &--blue {
+          background: rgba(59, 130, 246, 0.1);
+          mat-icon {
+            color: #3b82f6;
+          }
+        }
+        &--slate {
+          background: rgba(100, 116, 139, 0.1);
+          mat-icon {
+            color: #64748b;
+          }
+        }
       }
 
       .qa-text {
@@ -343,20 +383,22 @@ import { AuthService } from '../../../../core/auth/auth.service';
       .qa-label {
         font-size: 0.875rem;
         font-weight: 600;
-        color: var(--pln-text-1, #18181B);
+        color: var(--pln-text-1, #18181b);
       }
 
       .qa-desc {
         font-size: 0.8125rem;
-        color: var(--pln-text-3, #71717A);
+        color: var(--pln-text-3, #71717a);
       }
 
       .qa-arrow {
         font-size: 18px;
         width: 18px;
         height: 18px;
-        color: var(--pln-text-4, #A1A1AA);
-        transition: color 0.13s, transform 0.13s;
+        color: var(--pln-text-4, #a1a1aa);
+        transition:
+          color 0.13s,
+          transform 0.13s;
       }
     `,
   ],
@@ -369,36 +411,49 @@ export class DashboardComponent implements OnInit {
   readonly today = new Date();
   readonly user = toSignal(this.authService.user$);
 
-  private readonly projects = toSignal(
-    this.store.state$.pipe(map((s) => s.projects)),
-    { initialValue: [] }
-  );
+  private readonly projects = toSignal(this.store.state$.pipe(map((s) => s.projects)), {
+    initialValue: [],
+  });
 
-  readonly totalProjects     = computed(() => this.projects().length);
-  readonly activeProjects    = computed(() => this.projects().filter((p) => p.status === 'active').length);
-  readonly completedProjects = computed(() => this.projects().filter((p) => p.status === 'completed').length);
-  readonly onHoldProjects    = computed(() => this.projects().filter((p) => p.status === 'on_hold').length);
+  readonly totalProjects = computed(() => this.projects().length);
+  readonly activeProjects = computed(
+    () => this.projects().filter((p) => p.status === 'active').length,
+  );
+  readonly completedProjects = computed(
+    () => this.projects().filter((p) => p.status === 'completed').length,
+  );
+  readonly onHoldProjects = computed(
+    () => this.projects().filter((p) => p.status === 'on_hold').length,
+  );
 
   readonly recentProjects = computed(() =>
     [...this.projects()]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 6)
+      .slice(0, 6),
   );
 
   readonly greeting = computed(() => {
-    const name  = this.user()?.name;
+    const name = this.user()?.name;
     const first = name?.split(' ')[0];
-    const hour  = new Date().getHours();
+    const hour = new Date().getHours();
     const prefix =
-      hour >= 5 && hour < 12 ? 'Good morning' :
-      hour >= 12 && hour < 17 ? 'Good afternoon' :
-      hour >= 17 && hour < 21 ? 'Good evening' : 'Good night';
+      hour >= 5 && hour < 12
+        ? 'Good morning'
+        : hour >= 12 && hour < 17
+          ? 'Good afternoon'
+          : hour >= 17 && hour < 21
+            ? 'Good evening'
+            : 'Good night';
     return first ? `${prefix}, ${first} 👋` : prefix;
   });
 
-  readonly statusLabel = (status: string): string => ({
-    active: 'Active', on_hold: 'On hold', completed: 'Completed', archived: 'Archived',
-  }[status] ?? status);
+  readonly statusLabel = (status: string): string =>
+    ({
+      active: 'Active',
+      on_hold: 'On hold',
+      completed: 'Completed',
+      archived: 'Archived',
+    })[status] ?? status;
 
   ngOnInit(): void {
     this.store.load();

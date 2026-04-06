@@ -1,11 +1,11 @@
 // Design tokens — spacing, radius, layout, color system
 :root {
   // ── Spacing ──────────────────────────────────────────────────────────────
-  --pln-spacing-xs:  4px;
-  --pln-spacing-sm:  8px;
-  --pln-spacing-md:  16px;
-  --pln-spacing-lg:  24px;
-  --pln-spacing-xl:  36px;
+  --pln-spacing-xs: 4px;
+  --pln-spacing-sm: 8px;
+  --pln-spacing-md: 16px;
+  --pln-spacing-lg: 24px;
+  --pln-spacing-xl: 36px;
   --pln-spacing-2xl: 56px;
 
   // ── Radius ────────────────────────────────────────────────────────────────
@@ -15,60 +15,60 @@
   --pln-radius-xl: 20px;
 
   // ── Layout ────────────────────────────────────────────────────────────────
-  --pln-sidebar-width:    252px;
+  --pln-sidebar-width: 252px;
   --pln-content-max-width: 1280px;
 
   // ── Shadows ───────────────────────────────────────────────────────────────
   --pln-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
   --pln-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --pln-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --pln-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --pln-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06);
   --pln-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.14), 0 8px 16px rgba(0, 0, 0, 0.08);
 
   // ── Sidebar (dark) ────────────────────────────────────────────────────────
-  --pln-sidebar-bg:                 #09090B;
-  --pln-sidebar-border:             rgba(255, 255, 255, 0.07);
-  --pln-sidebar-text:               rgba(255, 255, 255, 0.48);
-  --pln-sidebar-text-hover:         rgba(255, 255, 255, 0.78);
-  --pln-sidebar-text-active:        rgba(255, 255, 255, 0.96);
-  --pln-sidebar-item-hover:         rgba(255, 255, 255, 0.05);
-  --pln-sidebar-item-active-bg:     rgba(99, 102, 241, 0.16);
-  --pln-sidebar-item-active-color:  #A5B4FC;
-  --pln-sidebar-section-label:      rgba(255, 255, 255, 0.24);
+  --pln-sidebar-bg: #09090b;
+  --pln-sidebar-border: rgba(255, 255, 255, 0.07);
+  --pln-sidebar-text: rgba(255, 255, 255, 0.48);
+  --pln-sidebar-text-hover: rgba(255, 255, 255, 0.78);
+  --pln-sidebar-text-active: rgba(255, 255, 255, 0.96);
+  --pln-sidebar-item-hover: rgba(255, 255, 255, 0.05);
+  --pln-sidebar-item-active-bg: rgba(99, 102, 241, 0.16);
+  --pln-sidebar-item-active-color: #a5b4fc;
+  --pln-sidebar-section-label: rgba(255, 255, 255, 0.24);
 
   // ── Content area ──────────────────────────────────────────────────────────
-  --pln-page-bg:      #F4F4F5;
-  --pln-card-bg:      #FFFFFF;
-  --pln-card-border:  #E4E4E7;
-  --pln-card-shadow:  0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --pln-page-bg: #f4f4f5;
+  --pln-card-bg: #ffffff;
+  --pln-card-border: #e4e4e7;
+  --pln-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
 
   // ── Text hierarchy ────────────────────────────────────────────────────────
-  --pln-text-1: #18181B;
-  --pln-text-2: #3F3F46;
-  --pln-text-3: #71717A;
-  --pln-text-4: #A1A1AA;
+  --pln-text-1: #18181b;
+  --pln-text-2: #3f3f46;
+  --pln-text-3: #71717a;
+  --pln-text-4: #a1a1aa;
 
   // ── Status tokens ─────────────────────────────────────────────────────────
-  --pln-status-active-bg:       #ECFDF5;
-  --pln-status-active-color:    #059669;
-  --pln-status-active-border:   #A7F3D0;
-  --pln-status-hold-bg:         #FFFBEB;
-  --pln-status-hold-color:      #B45309;
-  --pln-status-hold-border:     #FDE68A;
-  --pln-status-done-bg:         #EFF6FF;
-  --pln-status-done-color:      #1D4ED8;
-  --pln-status-done-border:     #BFDBFE;
-  --pln-status-archived-bg:     #F4F4F5;
-  --pln-status-archived-color:  #71717A;
-  --pln-status-archived-border: #E4E4E7;
+  --pln-status-active-bg: #ecfdf5;
+  --pln-status-active-color: #059669;
+  --pln-status-active-border: #a7f3d0;
+  --pln-status-hold-bg: #fffbeb;
+  --pln-status-hold-color: #b45309;
+  --pln-status-hold-border: #fde68a;
+  --pln-status-done-bg: #eff6ff;
+  --pln-status-done-color: #1d4ed8;
+  --pln-status-done-border: #bfdbfe;
+  --pln-status-archived-bg: #f4f4f5;
+  --pln-status-archived-color: #71717a;
+  --pln-status-archived-border: #e4e4e7;
 
   // ── Gradient presets ──────────────────────────────────────────────────────
-  --pln-grad-violet:  linear-gradient(135deg, #7C3AED 0%, #6366F1 100%);
-  --pln-grad-emerald: linear-gradient(135deg, #059669 0%, #34D399 100%);
-  --pln-grad-blue:    linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%);
-  --pln-grad-amber:   linear-gradient(135deg, #D97706 0%, #FCD34D 100%);
-  --pln-grad-rose:    linear-gradient(135deg, #BE123C 0%, #FB7185 100%);
-  --pln-grad-brand:   linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  --pln-grad-violet: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  --pln-grad-emerald: linear-gradient(135deg, #059669 0%, #34d399 100%);
+  --pln-grad-blue: linear-gradient(135deg, #1d4ed8 0%, #60a5fa 100%);
+  --pln-grad-amber: linear-gradient(135deg, #d97706 0%, #fcd34d 100%);
+  --pln-grad-rose: linear-gradient(135deg, #be123c 0%, #fb7185 100%);
+  --pln-grad-brand: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 }
 
 // ── Utility ──────────────────────────────────────────────────────────────────

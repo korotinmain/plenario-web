@@ -35,7 +35,7 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
         margin: 0;
         font-size: 1.75rem;
         font-weight: 800;
-        color: var(--pln-text-1, #18181B);
+        color: var(--pln-text-1, #18181b);
         line-height: 1.15;
         letter-spacing: -0.04em;
       }
@@ -43,7 +43,7 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
       .page-header__subtitle {
         margin: 6px 0 0;
         font-size: 0.875rem;
-        color: var(--pln-text-3, #71717A);
+        color: var(--pln-text-3, #71717a);
         line-height: 1.55;
       }
 

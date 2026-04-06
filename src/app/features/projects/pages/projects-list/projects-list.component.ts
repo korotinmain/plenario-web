@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  OnInit,
+  signal,
+  computed,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -53,8 +60,12 @@ export class ProjectsListComponent implements OnInit {
   readonly store = inject(ProjectsStore);
   private readonly dialog = inject(MatDialog);
 
-  readonly allProjects = toSignal(this.store.state$.pipe(map((s) => s.projects)), { initialValue: [] });
-  readonly loading = toSignal(this.store.state$.pipe(map((s) => s.loading)), { initialValue: false });
+  readonly allProjects = toSignal(this.store.state$.pipe(map((s) => s.projects)), {
+    initialValue: [],
+  });
+  readonly loading = toSignal(this.store.state$.pipe(map((s) => s.loading)), {
+    initialValue: false,
+  });
   readonly error = toSignal(this.store.state$.pipe(map((s) => s.error)), { initialValue: null });
 
   readonly activeFilter = signal<FilterKey>('all');
@@ -66,11 +77,11 @@ export class ProjectsListComponent implements OnInit {
   });
 
   readonly filters: { key: FilterKey; label: string }[] = [
-    { key: 'all',       label: 'All' },
-    { key: 'active',    label: 'Active' },
-    { key: 'on_hold',   label: 'On hold' },
+    { key: 'all', label: 'All' },
+    { key: 'active', label: 'Active' },
+    { key: 'on_hold', label: 'On hold' },
     { key: 'completed', label: 'Completed' },
-    { key: 'archived',  label: 'Archived' },
+    { key: 'archived', label: 'Archived' },
   ];
 
   countFor(key: FilterKey): number {
@@ -97,4 +108,3 @@ export class ProjectsListComponent implements OnInit {
     this.dialog.open(DeleteProjectDialogComponent, { data: project });
   }
 }
-

@@ -52,7 +52,12 @@ export class ProtectedLayoutComponent {
     const u = this.user();
     if (!u) return '?';
     if (u.name) {
-      return u.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+      return u.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
     }
     return u.email[0].toUpperCase();
   }

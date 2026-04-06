@@ -92,7 +92,9 @@
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: 0.005em;
-  transition: color 0.14s, background 0.14s;
+  transition:
+    color 0.14s,
+    background 0.14s;
   position: relative;
   overflow: hidden;
 
@@ -197,7 +199,7 @@
   transition: color 0.14s;
 
   &:hover {
-    color: #FDA4AF; // rose-300 — soft danger on dark bg
+    color: #fda4af; // rose-300 — soft danger on dark bg
   }
 }
 
@@ -211,4 +213,3 @@
   max-width: var(--pln-content-max-width);
   min-height: 100%;
 }
-

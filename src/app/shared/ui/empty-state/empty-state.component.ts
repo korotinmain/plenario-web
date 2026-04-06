@@ -43,7 +43,11 @@ import { MatIconModule } from '@angular/material/icon';
         width: 64px;
         height: 64px;
         border-radius: 18px;
-        background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+        background: linear-gradient(
+          135deg,
+          rgba(99, 102, 241, 0.12) 0%,
+          rgba(139, 92, 246, 0.12) 100%
+        );
         border: 1px solid rgba(99, 102, 241, 0.15);
         display: flex;
         align-items: center;
@@ -54,7 +58,7 @@ import { MatIconModule } from '@angular/material/icon';
         font-size: 30px;
         width: 30px;
         height: 30px;
-        color: #6366F1;
+        color: #6366f1;
         opacity: 0.8;
       }
 
@@ -62,14 +66,14 @@ import { MatIconModule } from '@angular/material/icon';
         margin: 0 0 8px;
         font-size: 1.125rem;
         font-weight: 700;
-        color: var(--pln-text-1, #18181B);
+        color: var(--pln-text-1, #18181b);
         letter-spacing: -0.02em;
       }
 
       .empty-state__message {
         margin: 0;
         font-size: 0.875rem;
-        color: var(--pln-text-3, #71717A);
+        color: var(--pln-text-3, #71717a);
         max-width: 300px;
         line-height: 1.6;
       }
@@ -88,4 +92,3 @@ export class EmptyStateComponent {
   @Input({ required: true }) title!: string;
   @Input() message = '';
 }
-

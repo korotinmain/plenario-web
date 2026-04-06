@@ -32,7 +32,9 @@ import { MatIconModule } from '@angular/material/icon';
         width: 100%;
         border-radius: 16px;
         overflow: hidden;
-        transition: transform 0.18s, box-shadow 0.18s;
+        transition:
+          transform 0.18s,
+          box-shadow 0.18s;
 
         &:hover {
           transform: translateY(-2px);
@@ -40,20 +42,36 @@ import { MatIconModule } from '@angular/material/icon';
         }
 
         // ── Gradient variants ──────────────────────────────────────────────
-        &--violet  { background: var(--pln-grad-violet); }
-        &--emerald { background: var(--pln-grad-emerald); }
-        &--blue    { background: var(--pln-grad-blue); }
-        &--amber   { background: var(--pln-grad-amber); }
+        &--violet {
+          background: var(--pln-grad-violet);
+        }
+        &--emerald {
+          background: var(--pln-grad-emerald);
+        }
+        &--blue {
+          background: var(--pln-grad-blue);
+        }
+        &--amber {
+          background: var(--pln-grad-amber);
+        }
 
         &--default {
           background: var(--pln-card-bg, #fff);
-          border: 1px solid var(--pln-card-border, #E4E4E7);
+          border: 1px solid var(--pln-card-border, #e4e4e7);
           box-shadow: var(--pln-card-shadow);
 
-          .card-label { color: var(--pln-text-3); }
-          .card-value { color: var(--pln-text-1); }
-          .card-icon-wrap { background: rgba(99, 102, 241, 0.1); }
-          .card-icon { color: #6366F1; }
+          .card-label {
+            color: var(--pln-text-3);
+          }
+          .card-value {
+            color: var(--pln-text-1);
+          }
+          .card-icon-wrap {
+            background: rgba(99, 102, 241, 0.1);
+          }
+          .card-icon {
+            color: #6366f1;
+          }
         }
 
         // White text on gradient cards
@@ -61,10 +79,18 @@ import { MatIconModule } from '@angular/material/icon';
         &--emerald,
         &--blue,
         &--amber {
-          .card-label { color: rgba(255, 255, 255, 0.75); }
-          .card-value { color: #fff; }
-          .card-icon-wrap { background: rgba(255, 255, 255, 0.15); }
-          .card-icon { color: rgba(255, 255, 255, 0.9); }
+          .card-label {
+            color: rgba(255, 255, 255, 0.75);
+          }
+          .card-value {
+            color: #fff;
+          }
+          .card-icon-wrap {
+            background: rgba(255, 255, 255, 0.15);
+          }
+          .card-icon {
+            color: rgba(255, 255, 255, 0.9);
+          }
         }
       }
 
@@ -117,4 +143,3 @@ export class StatCardComponent {
   @Input() icon?: string;
   @Input() gradient?: 'violet' | 'emerald' | 'blue' | 'amber';
 }
-

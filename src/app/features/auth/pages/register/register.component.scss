@@ -8,8 +8,13 @@
   padding: 8px 0;
 }
 
-.success-icon svg { width: 52px; height: 52px; }
-.success-subtitle { text-align: center; }
+.success-icon svg {
+  width: 52px;
+  height: 52px;
+}
+.success-subtitle {
+  text-align: center;
+}
 
 .email-highlight {
   color: var(--mat-sys-on-surface);
@@ -22,7 +27,10 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
-.back-btn { margin-top: 8px; border-radius: 10px; }
+.back-btn {
+  margin-top: 8px;
+  border-radius: 10px;
+}
 
 .field-error {
   font-size: 0.75rem;
@@ -40,7 +48,11 @@
   margin-bottom: 4px;
   padding: 0 2px;
 
-  &__tracks { display: flex; gap: 5px; flex: 1; }
+  &__tracks {
+    display: flex;
+    gap: 5px;
+    flex: 1;
+  }
 
   &__track {
     flex: 1;
@@ -48,21 +60,44 @@
     border-radius: 2px;
     background: var(--mat-sys-outline-variant);
     transition: background-color 0.25s ease;
-    &--weak   { background: #ef4444; }
-    &--fair   { background: #f97316; }
-    &--good   { background: #eab308; }
-    &--strong { background: #22c55e; }
-    &--empty  { background: var(--mat-sys-outline-variant); }
+    &--weak {
+      background: #ef4444;
+    }
+    &--fair {
+      background: #f97316;
+    }
+    &--good {
+      background: #eab308;
+    }
+    &--strong {
+      background: #22c55e;
+    }
+    &--empty {
+      background: var(--mat-sys-outline-variant);
+    }
   }
 
-  &__label { font-size: 0.75rem; font-weight: 600; min-width: 40px; text-align: right; }
+  &__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: right;
+  }
 }
 
 .strength-label {
-  &--weak   { color: #ef4444; }
-  &--fair   { color: #f97316; }
-  &--good   { color: #eab308; }
-  &--strong { color: #22c55e; }
+  &--weak {
+    color: #ef4444;
+  }
+  &--fair {
+    color: #f97316;
+  }
+  &--good {
+    color: #eab308;
+  }
+  &--strong {
+    color: #22c55e;
+  }
 }
 
 // -- Terms hint --
@@ -72,6 +107,11 @@
   color: var(--mat-sys-on-surface-variant);
   line-height: 1.55;
   text-align: center;
-  a { color: var(--mat-sys-primary); text-decoration: none; }
-  a:hover { text-decoration: underline; }
+  a {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
 }

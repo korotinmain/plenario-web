@@ -19,10 +19,17 @@
     align-items: center;
     justify-content: center;
     color: var(--mat-sys-primary);
-    svg { width: 16px; height: 16px; }
+    svg {
+      width: 16px;
+      height: 16px;
+    }
   }
 
-  &__body { display: flex; flex-direction: column; gap: 3px; }
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
 
   &__title {
     margin: 0;
@@ -68,5 +75,7 @@
   color: var(--mat-sys-primary);
   text-decoration: none;
   padding: 2px 0;
-  &:hover { text-decoration: underline; }
+  &:hover {
+    text-decoration: underline;
+  }
 }

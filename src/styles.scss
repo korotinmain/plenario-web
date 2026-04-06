@@ -1,7 +1,7 @@
 // Global stylesheet — imports only.
 // Each partial owns one responsibility; add new concerns in a new partial.
 
-@forward 'styles/theme';       // Material theme, base HTML/body/a resets
-@forward 'styles/tokens';      // Design tokens (:root CSS vars) + utility classes
+@forward 'styles/theme'; // Material theme, base HTML/body/a resets
+@forward 'styles/tokens'; // Design tokens (:root CSS vars) + utility classes
 @forward 'styles/form-fields'; // mat-form-field (outlined) premium overrides
-@forward 'styles/auth';        // Auth pages shared styles (.auth-page scope)
+@forward 'styles/auth'; // Auth pages shared styles (.auth-page scope)

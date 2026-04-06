@@ -53,7 +53,9 @@
     &:hover {
       color: var(--mat-sys-on-surface);
       text-decoration: none;
-      svg { transform: translateX(-3px); }
+      svg {
+        transform: translateX(-3px);
+      }
     }
   }
 
@@ -75,7 +77,9 @@
     }
   }
 
-  .auth-header { margin-bottom: 28px; }
+  .auth-header {
+    margin-bottom: 28px;
+  }
 
   .auth-title {
     margin: 0 0 6px;
@@ -107,7 +111,9 @@
     box-shadow:
       0 1px 2px color-mix(in srgb, var(--mat-sys-shadow) 6%, transparent),
       0 0 0 1px color-mix(in srgb, var(--mat-sys-outline-variant) 60%, transparent);
-    transition: box-shadow 0.15s ease, background 0.15s ease;
+    transition:
+      box-shadow 0.15s ease,
+      background 0.15s ease;
 
     .mdc-button__label {
       display: flex;
@@ -118,14 +124,22 @@
     }
 
     &:hover:not([disabled]) {
-      background: color-mix(in srgb, var(--mat-sys-surface-variant) 35%, var(--mat-sys-surface)) !important;
+      background: color-mix(
+        in srgb,
+        var(--mat-sys-surface-variant) 35%,
+        var(--mat-sys-surface)
+      ) !important;
       box-shadow:
         0 2px 6px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent),
         0 0 0 1px color-mix(in srgb, var(--mat-sys-outline-variant) 80%, transparent);
     }
 
     &:active:not([disabled]) {
-      background: color-mix(in srgb, var(--mat-sys-surface-variant) 55%, var(--mat-sys-surface)) !important;
+      background: color-mix(
+        in srgb,
+        var(--mat-sys-surface-variant) 55%,
+        var(--mat-sys-surface)
+      ) !important;
       box-shadow: 0 1px 2px color-mix(in srgb, var(--mat-sys-shadow) 5%, transparent);
     }
   }
@@ -167,7 +181,9 @@
     gap: 4px;
   }
 
-  .full-width { width: 100%; }
+  .full-width {
+    width: 100%;
+  }
 
   // ── Error banner ──────────────────────────────────────────────────────────
   .error-banner {
@@ -200,7 +216,9 @@
     letter-spacing: 0;
     border-radius: 12px;
     text-decoration: none;
-    transition: opacity 0.15s ease, box-shadow 0.15s ease;
+    transition:
+      opacity 0.15s ease,
+      box-shadow 0.15s ease;
 
     .mdc-button__label {
       display: flex;
@@ -214,7 +232,9 @@
       box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 28%, transparent);
     }
 
-    &:disabled { opacity: 0.62; }
+    &:disabled {
+      opacity: 0.62;
+    }
   }
 
   // Arrow icon (trailing, used in submit-btn)
@@ -274,7 +294,9 @@
       color: var(--mat-sys-primary);
       text-decoration: none;
 
-      &:hover { text-decoration: underline; }
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 }

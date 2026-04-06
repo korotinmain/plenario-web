@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../../core/auth/auth.service';
 import { AuthApiService } from '../data-access/auth-api.service';
-import { LoginRequest, RegisterRequest } from '../models/auth-request.models';
+import { LoginRequest, RegisterRequest, ForgotPasswordRequest, ResetPasswordRequest } from '../models/auth-request.models';
 
 export type LoginError = 'unverified_email' | 'invalid_credentials' | 'unknown';
 
@@ -20,6 +20,12 @@ export interface AuthStoreState {
   resendLoading: boolean;
   resendSuccess: boolean;
   resendError: string | null;
+  forgotPasswordLoading: boolean;
+  forgotPasswordError: string | null;
+  forgotPasswordSuccess: boolean;
+  resetPasswordLoading: boolean;
+  resetPasswordError: string | null;
+  resetPasswordSuccess: boolean;
 }
 
 const initialState: AuthStoreState = {
@@ -33,6 +39,12 @@ const initialState: AuthStoreState = {
   resendLoading: false,
   resendSuccess: false,
   resendError: null,
+  forgotPasswordLoading: false,
+  forgotPasswordError: null,
+  forgotPasswordSuccess: false,
+  resetPasswordLoading: false,
+  resetPasswordError: null,
+  resetPasswordSuccess: false,
 };
 
 @Injectable({ providedIn: 'root' })
@@ -173,8 +185,66 @@ export class AuthStore {
     });
   }
 
+  forgotPassword(data: ForgotPasswordRequest): Observable<void> {
+    this.patch({ forgotPasswordLoading: true, forgotPasswordError: null, forgotPasswordSuccess: false });
+
+    return new Observable<void>((observer) => {
+      this.authApiService
+        .forgotPassword(data)
+        .pipe(
+          tap(() => {
+            this.patch({ forgotPasswordSuccess: true });
+          }),
+          catchError((err) => {
+            const message = this.extractErrorMessage(err, 'Failed to send reset email. Please try again.');
+            this.patch({ forgotPasswordError: message });
+            observer.error(err);
+            return EMPTY;
+          }),
+          finalize(() => {
+            this.patch({ forgotPasswordLoading: false });
+            observer.complete();
+          }),
+        )
+        .subscribe({ next: () => observer.next() });
+    });
+  }
+
+  resetPassword(data: ResetPasswordRequest): Observable<void> {
+    this.patch({ resetPasswordLoading: true, resetPasswordError: null, resetPasswordSuccess: false });
+
+    return new Observable<void>((observer) => {
+      this.authApiService
+        .resetPassword(data)
+        .pipe(
+          tap(() => {
+            this.patch({ resetPasswordSuccess: true });
+          }),
+          catchError((err) => {
+            const message = this.extractErrorMessage(err, 'Failed to reset password. The link may have expired.');
+            this.patch({ resetPasswordError: message });
+            observer.error(err);
+            return EMPTY;
+          }),
+          finalize(() => {
+            this.patch({ resetPasswordLoading: false });
+            observer.complete();
+          }),
+        )
+        .subscribe({ next: () => observer.next() });
+    });
+  }
+
   resetRegisterState(): void {
     this.patch({ registerError: null, registerSuccess: false });
+  }
+
+  resetForgotPasswordState(): void {
+    this.patch({ forgotPasswordLoading: false, forgotPasswordError: null, forgotPasswordSuccess: false });
+  }
+
+  resetResetPasswordState(): void {
+    this.patch({ resetPasswordLoading: false, resetPasswordError: null, resetPasswordSuccess: false });
   }
 
   resetLoginState(): void {

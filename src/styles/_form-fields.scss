@@ -1,0 +1,197 @@
+// Material form field — premium structural overrides (outlined variant, applied globally).
+// Token-based overrides live in _theme.scss via mat.form-field-overrides().
+// This file handles non-token structural CSS (background, box-shadow, transforms)
+// prefixed with `html` or `:root` to beat Angular Material's component-style
+// specificity without needing !important.
+
+// ── 1. Container height: taller field creates room for label-inside layout ────
+// :root beats Angular Material's html{} specificity (pseudo-class > element).
+:root {
+  --mat-form-field-container-height: 62px;
+  --mat-form-field-container-vertical-padding: 19px;
+}
+
+// ── All structural overrides under html prefix ────────────────────────────────
+html {
+  // ── 2. Idle: soft gray fill, no visible border ────────────────────────────
+  .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+    background: var(--mat-sys-surface-container-high);
+    box-shadow: none;
+    transition:
+      background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // ── 3. Hover: slightly darker fill ───────────────────────────────────────
+  .mat-mdc-form-field:not(.mat-form-field-disabled) {
+    .mat-mdc-text-field-wrapper:hover {
+      background: var(--mat-sys-surface-container-highest);
+    }
+  }
+
+  // ── 4. Focus: white background + purple glow ring ────────────────────────
+  .mat-mdc-form-field {
+    .mdc-text-field--focused {
+      background: #ffffff;
+      box-shadow:
+        0 0 0 3px color-mix(in srgb, var(--mat-sys-primary) 18%, transparent),
+        0 2px 8px rgba(0, 0, 0, 0.07);
+
+      &.mdc-text-field--invalid {
+        box-shadow:
+          0 0 0 3px color-mix(in srgb, var(--mat-sys-error) 18%, transparent),
+          0 2px 8px rgba(0, 0, 0, 0.07);
+      }
+    }
+
+    // Error idle: rose tint over gray
+    &.mat-form-field-invalid .mat-mdc-text-field-wrapper:not(.mdc-text-field--focused) {
+      background: color-mix(
+        in srgb,
+        var(--mat-sys-error-container) 30%,
+        var(--mat-sys-surface-container-high)
+      );
+    }
+  }
+
+  // ── 5. Close the notch: restore border-top so the outline is continuous ───
+  // Material sets `border-top: none` on the notch when the label floats; we
+  // restore it with the correct color token per interaction state so the border
+  // appears as a solid rectangle instead of a gap for the label.
+
+  // Default (idle) — outline-color is transparent, so border-top is invisible
+  .mdc-notched-outline--notched .mdc-notched-outline__notch {
+    border-top-style: solid;
+    border-top-width: var(--mat-form-field-outlined-outline-width, 1.5px);
+    border-top-color: var(--mat-form-field-outlined-outline-color, transparent);
+  }
+  // Hover
+  .mdc-text-field:not(.mdc-text-field--focused):hover
+    .mdc-notched-outline--notched
+    .mdc-notched-outline__notch {
+    border-top-color: var(--mat-form-field-outlined-hover-outline-color, rgba(0, 0, 0, 0.12));
+  }
+  // Focus
+  .mdc-text-field--focused .mdc-notched-outline--notched .mdc-notched-outline__notch {
+    border-top-width: var(--mat-form-field-outlined-focus-outline-width, 2px);
+    border-top-color: var(--mat-form-field-outlined-focus-outline-color, var(--mat-sys-primary));
+  }
+  // Error (idle)
+  .mdc-text-field--invalid .mdc-notched-outline--notched .mdc-notched-outline__notch {
+    border-top-color: var(--mat-form-field-outlined-error-outline-color, var(--mat-sys-error));
+  }
+  // Error + focused
+  .mdc-text-field--focused.mdc-text-field--invalid
+    .mdc-notched-outline--notched
+    .mdc-notched-outline__notch {
+    border-top-color: var(
+      --mat-form-field-outlined-error-focus-outline-color,
+      var(--mat-sys-error)
+    );
+  }
+
+  // ── 6. Floating label: position INSIDE the field ──────────────────────────
+  // Default MDC transform: translateY(-34.75px) puts the label ON the top border
+  // (outside the content area). We override to Y=-22px which, for a 62px container
+  // (center_Y=31px), places the label center at 31-22=9px from outer top — inside.
+  .mdc-text-field--outlined.mdc-notched-outline--upgraded .mdc-floating-label--float-above,
+  .mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above {
+    transform: translateY(-22px) scale(0.75);
+  }
+  // Non-upgraded fallback
+  .mdc-text-field--outlined .mdc-floating-label--float-above {
+    transform: translateY(-22px) scale(1);
+  }
+
+  // ── 7. Floating label style: uppercase + tight tracking ──────────────────
+  .mdc-floating-label--float-above {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
+  // ── 8. Input text: medium weight + optical letter-spacing ────────────────
+  .mat-mdc-input-element {
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  // ── 9. Outline border transitions ────────────────────────────────────────
+  .mat-mdc-form-field {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+
+  // ── 10. Subscript area: compact ──────────────────────────────────────────
+  .mat-mdc-form-field-subscript-wrapper {
+    .mat-mdc-form-field-hint-wrapper,
+    .mat-mdc-form-field-error-wrapper {
+      padding: 0 4px;
+    }
+  }
+
+  .mat-mdc-form-field-bottom-align::before {
+    height: 14px;
+  }
+
+  // ── 11. Suffix icon buttons (password visibility) ────────────────────────
+  .mat-mdc-form-field {
+    .mat-mdc-icon-button.mat-mdc-button-base {
+      width: 36px;
+      height: 36px;
+      padding: 6px;
+      color: #a0aab4;
+      transition: color 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        color: var(--mat-sys-on-surface);
+      }
+
+      .mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  // ── 12. Disabled state ───────────────────────────────────────────────────
+  .mat-mdc-form-field.mat-form-field-disabled .mat-mdc-text-field-wrapper {
+    background: color-mix(in srgb, var(--mat-sys-surface-container-high) 50%, transparent);
+    box-shadow: none;
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // ── 13. Select inputs ────────────────────────────────────────────────────
+  .mat-mdc-select-trigger {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+}
+
+// ── 14. mat-error typography ──────────────────────────────────────────────────
+mat-error {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: var(--mat-sys-error);
+}
+
+// ── 15. Browser autofill override ─────────────────────────────────────────────
+// Use the gray surface token for idle state, white when focused.
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--mat-sys-surface-container-high) inset !important;
+  -webkit-text-fill-color: var(--mat-sys-on-surface) !important;
+  caret-color: var(--mat-sys-primary);
+  transition: background-color 9999s ease 0s;
+}
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+}

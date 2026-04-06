@@ -4,24 +4,42 @@
 
 - Angular (standalone)
 - Angular Material (required UI library)
+- Tailwind CSS v4 (utility-first styling)
 - RxJS
 
 ## UI Library Requirement (CRITICAL)
 
-All UI must be built using Angular Material components where applicable:
+**Prefer Tailwind-first for form inputs and layout.** Use Angular Material for interactive/overlay components.
+
+### Tailwind components (prefer these)
+
+- text inputs, password fields → `<tw-input-field>`, `<app-password-field>` (shared/ui)
+- layout, spacing, flex/grid → Tailwind utility classes
+- custom cards, banners, stat cards → Tailwind utility classes
+- badges, tags, pills → Tailwind utility classes
+- typography, colors → Tailwind utility classes
+
+### Angular Material components (use for complex interactive UI)
 
 - buttons → `mat-button`, `mat-raised-button`, `mat-icon-button`
 - dialogs → `MatDialog`
-- inputs → `mat-form-field`, `mat-input`
 - selects → `mat-select`
 - menus → `mat-menu`
-- cards → `mat-card`
 - lists → `mat-list`
 - snackbars → `MatSnackBar`
 - icons → `mat-icon`
+- date pickers, sliders, tabs → respective Material components
 
-Do not build custom primitives if Material already provides them.
-Custom styling is allowed on top of Material.
+Do not use `mat-form-field` / `mat-input` for new inputs — use `<tw-input-field>` instead.
+Do not build custom primitives if Tailwind utility composition already covers it.
+Custom SCSS is allowed on top of both Material and Tailwind where needed.
+
+### Tailwind usage rules
+
+- Tailwind v4 is configured via `src/tailwind.css` (`@import "tailwindcss"`) — no `tailwind.config.js` needed.
+- Bridge CSS variables (`--pln-input-ring`, `--pln-input-border`, `--pln-error-ring`, `--pln-error-border`) are defined in `src/tailwind.css @layer base` and link Material theme tokens to Tailwind arbitrary values.
+- Use `[class.utility]` binding syntax in Angular templates for conditional Tailwind classes.
+- Avoid mixing Tailwind utilities and SCSS rules on the same element — pick one approach per component.
 
 ## Architecture rules
 

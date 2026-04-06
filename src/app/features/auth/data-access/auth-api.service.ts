@@ -48,6 +48,12 @@ export class AuthApiService {
     return this.http.post<MessageResponse>(`${this.base}/resend-confirmation`, body);
   }
 
+  confirmEmail(token: string): Observable<MessageResponse> {
+    return this.http.get<MessageResponse>(`${this.base}/confirm-email`, {
+      params: { token },
+    });
+  }
+
   googleLogin(): void {
     window.location.href = `${this.base}/google`;
   }

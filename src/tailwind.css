@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+
+/* Scan Angular app source files — paths are relative to the project root */
+@source "./src/app/**/*.ts";
+@source "./src/app/**/*.html";
+
+/*
+ * Bridge CSS variables so Tailwind arbitrary values can reference Material theme
+ * tokens without hardcoding hex values.
+ */
+@layer base {
+  :root {
+    --pln-input-ring: color-mix(in srgb, var(--mat-sys-primary) 18%, transparent);
+    --pln-input-border: var(--mat-sys-primary);
+    --pln-error-ring: color-mix(in srgb, var(--mat-sys-error) 18%, transparent);
+    --pln-error-border: var(--mat-sys-error);
+  }
+}

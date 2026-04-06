@@ -1,0 +1,75 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$violet-palette,
+        tertiary: mat.$cyan-palette,
+        theme-type: light,
+      ),
+      typography: Inter,
+      density: -1,
+    )
+  );
+
+  // ── Form-field premium token overrides ─────────────────────────────────────
+  // Uses the correct M3 token names that the form-field component actually reads.
+  // Calling inside html{} gives these declarations the same specificity scope
+  // as mat.theme(), so they reliably override the defaults set above.
+  @include mat.form-field-overrides(
+    (
+      // Shape & outline width
+      outlined-container-shape: 16px,
+      outlined-outline-width: 1.5px,
+      outlined-focus-outline-width: 2px,
+
+      // Border colors — idle is transparent (filled-style look)
+      outlined-outline-color: transparent,
+      outlined-hover-outline-color: rgba(0, 0, 0, 0.12),
+      outlined-focus-outline-color: var(--mat-sys-primary),
+      outlined-error-outline-color: var(--mat-sys-error),
+      outlined-error-hover-outline-color: var(--mat-sys-error),
+      outlined-error-focus-outline-color: var(--mat-sys-error),
+      // Label colors
+      outlined-label-text-color: #9fa6b2,
+      outlined-hover-label-text-color: #6b7280,
+      outlined-focus-label-text-color: var(--mat-sys-primary),
+      outlined-error-label-text-color: var(--mat-sys-error),
+      outlined-error-focus-label-text-color: var(--mat-sys-error),
+      outlined-error-hover-label-text-color: var(--mat-sys-error),
+      // Input text & placeholder
+      outlined-input-text-color: var(--mat-sys-on-surface),
+      outlined-input-text-placeholder-color: #b0bac5,
+      outlined-caret-color: var(--mat-sys-primary),
+      // Subscript (hint / error message area)
+      subscript-text-size: 0.75rem,
+      subscript-text-line-height: 1.5
+    )
+  );
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  height: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--mat-sys-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

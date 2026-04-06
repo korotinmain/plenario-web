@@ -1,157 +1,77 @@
-.auth-page {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-// ── Header ───────────────────────────────────────────────
-.auth-header {
-  margin-bottom: 28px;
-}
-
-.auth-title {
-  margin: 0 0 6px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--mat-sys-on-surface);
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-}
-
-.auth-subtitle {
-  margin: 0;
-  font-size: 0.9375rem;
-  color: var(--mat-sys-on-surface-variant);
-  line-height: 1.5;
-}
-
-// ── Form ─────────────────────────────────────────────────
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.full-width {
-  width: 100%;
-}
-
-.submit-btn {
-  margin-top: 12px;
-  width: 100%;
-  height: 48px;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  letter-spacing: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border-radius: 12px;
-}
-
-// ── Error banner ─────────────────────────────────────────
-.field-error-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--mat-sys-error-container) 70%, transparent);
-  border: 1px solid color-mix(in srgb, var(--mat-sys-error) 20%, transparent);
-  font-size: 0.875rem;
-  color: var(--mat-sys-on-error-container);
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-  }
-}
-
-// ── Terms ─────────────────────────────────────────────────
-.terms-hint {
-  margin: 16px 0 0;
-  font-size: 0.75rem;
-  color: var(--mat-sys-on-surface-variant);
-  line-height: 1.5;
-  text-align: center;
-
-  a {
-    color: var(--mat-sys-primary);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
-
-// ── Footer link row ───────────────────────────────────────
-.auth-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid var(--mat-sys-outline-variant);
-
-  &__text {
-    font-size: 0.875rem;
-    color: var(--mat-sys-on-surface-variant);
-  }
-
-  &__link {
-    font-size: 0.875rem;
-    font-weight: 600;
-  }
-}
-
-// ── Success state ─────────────────────────────────────────
+// -- Success state --
 .success-block {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
   text-align: center;
-  padding: 16px 0 8px;
+  gap: 14px;
+  padding: 8px 0;
 }
 
-.success-icon-wrap {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--mat-sys-primary-container) 80%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  mat-icon {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
-    color: var(--mat-sys-primary);
-  }
-}
-
-.success-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+.success-icon svg { width: 52px; height: 52px; }
+.success-subtitle { text-align: center; }
 
 .email-highlight {
   color: var(--mat-sys-on-surface);
+  font-weight: 600;
 }
 
 .auth-hint {
-  margin: 4px 0 0;
+  margin: 0;
   font-size: 0.8125rem;
   color: var(--mat-sys-on-surface-variant);
 }
 
-.back-btn {
-  width: 100%;
+.back-btn { margin-top: 8px; border-radius: 10px; }
+
+.field-error {
+  font-size: 0.75rem;
+  color: var(--mat-sys-error);
+  padding: 0 4px;
+  margin-top: -2px;
+}
+
+// -- Password strength bar --
+.strength-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: -2px;
+  margin-bottom: 4px;
+  padding: 0 2px;
+
+  &__tracks { display: flex; gap: 5px; flex: 1; }
+
+  &__track {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--mat-sys-outline-variant);
+    transition: background-color 0.25s ease;
+    &--weak   { background: #ef4444; }
+    &--fair   { background: #f97316; }
+    &--good   { background: #eab308; }
+    &--strong { background: #22c55e; }
+    &--empty  { background: var(--mat-sys-outline-variant); }
+  }
+
+  &__label { font-size: 0.75rem; font-weight: 600; min-width: 40px; text-align: right; }
+}
+
+.strength-label {
+  &--weak   { color: #ef4444; }
+  &--fair   { color: #f97316; }
+  &--good   { color: #eab308; }
+  &--strong { color: #22c55e; }
+}
+
+// -- Terms hint --
+.terms-hint {
+  margin: 16px 0 0;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.55;
+  text-align: center;
+  a { color: var(--mat-sys-primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
 }

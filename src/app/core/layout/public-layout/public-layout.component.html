@@ -1,9 +1,84 @@
-<div class="public-layout">
-  <div class="public-layout__card">
-    <div class="public-layout__brand">
-      <div class="public-layout__logo-mark" aria-hidden="true">P</div>
-      <span class="public-layout__logo">Plenario</span>
+<div class="auth-shell">
+  <!-- ── Brand Panel ── -->
+  <aside class="brand-panel">
+    <div class="brand-blob brand-blob--a" aria-hidden="true"></div>
+    <div class="brand-blob brand-blob--b" aria-hidden="true"></div>
+    <div class="brand-blob brand-blob--c" aria-hidden="true"></div>
+
+    <div class="brand-content">
+      <div class="brand-logo">
+        <img class="brand-logo__mark" src="/plenario-logo.png" alt="Plenario" />
+        <span class="brand-logo__name">Plenario</span>
+      </div>
+
+      <div class="brand-hero">
+        <h2 class="brand-hero__title">Plan boldly.<br />Deliver confidently.</h2>
+        <p class="brand-hero__sub">
+          The modern workspace for teams that ship great work — on time, every time.
+        </p>
+      </div>
+
+      <ul class="brand-features" role="list">
+        <li class="brand-feature">
+          <span class="brand-feature__check" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none">
+              <path
+                d="M3 8l3.5 3.5 6.5-7"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          <span>Smart task &amp; project management</span>
+        </li>
+        <li class="brand-feature">
+          <span class="brand-feature__check" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none">
+              <path
+                d="M3 8l3.5 3.5 6.5-7"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          <span>Always know what is due today</span>
+        </li>
+        <li class="brand-feature">
+          <span class="brand-feature__check" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none">
+              <path
+                d="M3 8l3.5 3.5 6.5-7"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          <span>Insights that keep projects on track</span>
+        </li>
+      </ul>
+
+      <p class="brand-tagline">Free forever &middot; No credit card needed</p>
     </div>
-    <router-outlet></router-outlet>
-  </div>
+  </aside>
+
+  <!-- ── Form Panel ── -->
+  <main class="form-panel">
+    <!-- compact brand shown only on mobile -->
+    <div class="mobile-brand" aria-hidden="true">
+      <img class="mobile-brand__mark" src="/plenario-logo.png" alt="Plenario" />
+      <span class="mobile-brand__name">Plenario</span>
+    </div>
+
+    <div class="form-panel__scroll">
+      <div class="form-panel__inner">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </main>
 </div>

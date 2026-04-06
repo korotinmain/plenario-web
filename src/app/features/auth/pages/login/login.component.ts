@@ -9,11 +9,9 @@ import {
 } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatIconModule } from '@angular/material/icon';
+import { InputFieldComponent } from '../../../../shared/ui/input-field/input-field.component';
 import { PasswordFieldComponent } from '../../../../shared/ui/password-field/password-field.component';
 import { AuthStore } from '../../data-access/auth.store';
 import { AuthApiService } from '../../data-access/auth-api.service';
@@ -29,11 +27,9 @@ interface LoginForm {
   imports: [
     RouterLink,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatIconModule,
+    InputFieldComponent,
     PasswordFieldComponent,
   ],
   templateUrl: './login.component.html',

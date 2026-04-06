@@ -1,56 +1,159 @@
 <div class="auth-page">
   @if (success()) {
     <div class="success-block">
-      <div class="success-icon-wrap" aria-hidden="true">
-        <mat-icon>mark_email_read</mat-icon>
+      <div class="success-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="24" fill="var(--mat-sys-primary-container)" />
+          <path
+            d="M14 24l7.5 7.5L34 17"
+            stroke="var(--mat-sys-primary)"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
       </div>
-      <div class="success-body">
-        <h2 class="auth-title">Check your inbox</h2>
-        <p class="auth-subtitle">
-          We sent a confirmation link to<br />
-          <strong class="email-highlight">{{ emailCtrl.value }}</strong>
-        </p>
-        <p class="auth-hint">Didn't get it? Check your spam folder or request a new link.</p>
-      </div>
-      <a mat-stroked-button routerLink="/login" class="back-btn">Back to sign in</a>
+      <h2 class="auth-title">Check your inbox</h2>
+      <p class="auth-subtitle success-subtitle">
+        We sent a confirmation link to<br />
+        <strong class="email-highlight">{{ emailCtrl.value }}</strong>
+      </p>
+      <p class="auth-hint">Didn't get it? Check your spam folder.</p>
+      <a mat-stroked-button routerLink="/login" class="back-btn">
+        <svg class="btn-back-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M13 8H3M7 4L3 8l4 4"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        Back to sign in
+      </a>
     </div>
   } @else {
+    <div class="auth-badge">
+      <span class="auth-badge__dot"></span>
+      Free forever
+    </div>
+
     <div class="auth-header">
       <h1 class="auth-title">Create your account</h1>
-      <p class="auth-subtitle">Start planning smarter — it's free.</p>
+      <p class="auth-subtitle">Start planning smarter — it's free, no card needed.</p>
+    </div>
+
+    <button mat-stroked-button type="button" class="google-btn" (click)="signUpWithGoogle()">
+      <svg class="google-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="#4285F4"
+          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+        />
+        <path
+          fill="#34A853"
+          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        />
+        <path
+          fill="#FBBC05"
+          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+        />
+        <path
+          fill="#EA4335"
+          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+        />
+      </svg>
+      Sign up with Google
+    </button>
+
+    <div class="or-divider">
+      <span class="or-divider__line"></span>
+      <span class="or-divider__label">or</span>
+      <span class="or-divider__line"></span>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="auth-form">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Name (optional)</mat-label>
-        <input matInput [formControl]="nameCtrl" placeholder="Your name" autocomplete="name" />
-      </mat-form-field>
+      <tw-input-field
+        label="Full name"
+        [control]="nameCtrl"
+        placeholder="Your full name"
+        autocomplete="name"
+      />
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Email address</mat-label>
-        <input
-          matInput
-          type="email"
-          [formControl]="emailCtrl"
-          placeholder="you@example.com"
-          autocomplete="email"
-        />
+      <tw-input-field
+        label="Email address"
+        type="email"
+        [control]="emailCtrl"
+        placeholder="you@example.com"
+        autocomplete="email"
+      >
         @if (emailCtrl.hasError('required') && emailCtrl.touched) {
-          <mat-error>Email is required</mat-error>
+          <p class="text-xs text-rose-500 mt-0.5">Email is required</p>
         } @else if (emailCtrl.hasError('email') && emailCtrl.touched) {
-          <mat-error>Enter a valid email address</mat-error>
+          <p class="text-xs text-rose-500 mt-0.5">Enter a valid email address</p>
         }
-      </mat-form-field>
+      </tw-input-field>
 
       <app-password-field
         [control]="passwordCtrl"
         label="Password"
         placeholder="Minimum 8 characters"
-      />
+        autocomplete="new-password"
+      >
+        @if (passwordCtrl.hasError('required') && passwordCtrl.touched) {
+          <p class="text-xs text-rose-500 mt-0.5">Password is required</p>
+        } @else if (passwordCtrl.hasError('minlength') && passwordCtrl.touched) {
+          <p class="text-xs text-rose-500 mt-0.5">
+            Password must be at least
+            {{ passwordCtrl.getError('minlength').requiredLength }} characters
+          </p>
+        }
+      </app-password-field>
+
+      <app-password-field
+        [control]="confirmCtrl"
+        label="Confirm password"
+        autocomplete="new-password"
+      >
+        @if (form.hasError('passwordsMismatch') && confirmCtrl.touched) {
+          <p class="text-xs text-rose-500 mt-0.5">Passwords do not match</p>
+        }
+      </app-password-field>
+
+      @if (passwordValue()) {
+        <div class="strength-bar" aria-label="Password strength: {{ strengthLabel() }}">
+          <div class="strength-bar__tracks">
+            @for (i of [1, 2, 3, 4]; track i) {
+              <span
+                class="strength-bar__track"
+                [class]="
+                  'strength-bar__track--' +
+                  (i <= passwordStrength() ? strengthLabel().toLowerCase() : 'empty')
+                "
+              ></span>
+            }
+          </div>
+          <span
+            class="strength-bar__label"
+            [class]="'strength-label--' + strengthLabel().toLowerCase()"
+            >{{ strengthLabel() }}</span
+          >
+        </div>
+      }
 
       @if (error()) {
-        <div class="field-error-banner" role="alert">
-          <mat-icon>error_outline</mat-icon>
+        <div class="error-banner" role="alert">
+          <svg
+            class="error-banner__icon"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z"
+              clip-rule="evenodd"
+            />
+          </svg>
           <span>{{ error() }}</span>
         </div>
       }
@@ -60,7 +163,16 @@
           <mat-spinner diameter="18" />
           <span>Creating account…</span>
         } @else {
-          Create account
+          <span>Create account</span>
+          <svg class="btn-arrow" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M3 8h10M9 4l4 4-4 4"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
         }
       </button>
     </form>
@@ -73,7 +185,7 @@
 
     <div class="auth-footer">
       <span class="auth-footer__text">Already have an account?</span>
-      <a mat-button routerLink="/login" class="auth-footer__link">Sign in</a>
+      <a routerLink="/login" class="auth-footer__link">Sign in</a>
     </div>
   }
 </div>

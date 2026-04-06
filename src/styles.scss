@@ -1,65 +1,7 @@
-@use '@angular/material' as mat;
+// Global stylesheet — imports only.
+// Each partial owns one responsibility; add new concerns in a new partial.
 
-html {
-  height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$violet-palette,
-        tertiary: mat.$cyan-palette,
-        theme-type: light,
-      ),
-      typography: Inter,
-      density: -1,
-    )
-  );
-}
-
-body {
-  color-scheme: light;
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  height: 100%;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-a {
-  color: var(--mat-sys-primary);
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-:root {
-  --pln-spacing-xs: 4px;
-  --pln-spacing-sm: 8px;
-  --pln-spacing-md: 16px;
-  --pln-spacing-lg: 24px;
-  --pln-spacing-xl: 32px;
-  --pln-spacing-2xl: 48px;
-  --pln-radius-sm: 8px;
-  --pln-radius-md: 12px;
-  --pln-radius-lg: 16px;
-  --pln-sidebar-width: 240px;
-  --pln-content-max-width: 1200px;
-}
-
-.text-muted {
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.loading-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--pln-spacing-2xl);
-}
+@forward 'styles/theme';       // Material theme, base HTML/body/a resets
+@forward 'styles/tokens';      // Design tokens (:root CSS vars) + utility classes
+@forward 'styles/form-fields'; // mat-form-field (outlined) premium overrides
+@forward 'styles/auth';        // Auth pages shared styles (.auth-page scope)

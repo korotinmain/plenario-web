@@ -6,6 +6,17 @@ import { ProtectedLayoutComponent } from './core/layout/protected-layout/protect
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  // Redirect backend email link formats to actual routes
+  { path: 'auth/confirm-email', redirectTo: 'confirm-email' },
+  { path: 'auth/reset-password', redirectTo: 'reset-password' },
+  // Google OAuth callback — must be outside guards to fire before session is resolved
+  {
+    path: 'auth/google/callback',
+    loadComponent: () =>
+      import('./features/auth/pages/google-callback/google-callback.component').then(
+        (m) => m.GoogleCallbackComponent,
+      ),
+  },
 
   // Public routes (auth area)
   {
@@ -39,16 +50,14 @@ export const routes: Routes = [
             (m) => m.ResetPasswordComponent,
           ),
       },
+      {
+        path: 'confirm-email',
+        loadComponent: () =>
+          import('./features/auth/pages/confirm-email/confirm-email.component').then(
+            (m) => m.ConfirmEmailComponent,
+          ),
+      },
     ],
-  },
-
-  // Standalone auth result pages (no layout wrapper)
-  {
-    path: 'confirm-email',
-    loadComponent: () =>
-      import('./features/auth/pages/confirm-email/confirm-email.component').then(
-        (m) => m.ConfirmEmailComponent,
-      ),
   },
 
   // Protected routes (authenticated area)

@@ -11,7 +11,7 @@ COPY . .
 RUN mkdir -p src/environments && \
     printf "export const environment = {\n  production: true,\n  apiBaseUrl: '__API_BASE_URL__',\n};\n" \
     > src/environments/environment.production.ts
-RUN npm run build
+RUN npm run build -- --no-progress 2>&1
 
 # Stage 2: Serve
 FROM nginx:alpine

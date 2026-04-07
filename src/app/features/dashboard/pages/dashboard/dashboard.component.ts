@@ -10,6 +10,7 @@ import { ProjectsStore } from '../../../projects/data-access/projects.store';
 import { TasksStore } from '../../../tasks/data-access/tasks.store';
 import { TaskFormDialogComponent } from '../../../tasks/components/task-form-dialog/task-form-dialog.component';
 import { ProjectFormDialogComponent } from '../../../projects/components/project-form-dialog/project-form-dialog.component';
+import { AllProjectsDialogComponent } from '../../../projects/components/all-projects-dialog/all-projects-dialog.component';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { Task, TaskStatus } from '../../../tasks/models/task.models';
 
@@ -184,10 +185,10 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
             <h2 class="panel-title">Projects</h2>
             <p class="panel-sub">{{ activeProjectsCount() }} active · {{ totalProjects() }} total</p>
           </div>
-          <a routerLink="/projects" class="panel-viewall">
+          <button (click)="openAllProjects()" class="panel-viewall">
             View all
             <mat-icon>arrow_forward</mat-icon>
-          </a>
+          </button>
         </div>
 
         @if (loading()) {
@@ -1010,6 +1011,14 @@ export class DashboardComponent implements OnInit {
     this.dialog.open(ProjectFormDialogComponent, {
       autoFocus: 'first-tabbable',
       width: '480px',
+    });
+  }
+
+  openAllProjects(): void {
+    this.dialog.open(AllProjectsDialogComponent, {
+      data: this.projects(),
+      width: '520px',
+      autoFocus: false,
     });
   }
 

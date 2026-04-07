@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -12,12 +12,12 @@ import { AuthStore } from '../../../features/auth/data-access/auth.store';
 import { AuthService } from '../../auth/auth.service';
 import { ProjectsStore } from '../../../features/projects/data-access/projects.store';
 import { ProjectFormDialogComponent } from '../../../features/projects/components/project-form-dialog/project-form-dialog.component';
+import { AllProjectsDialogComponent } from '../../../features/projects/components/all-projects-dialog/all-projects-dialog.component';
 
 interface NavItem {
   label: string;
   icon: string;
   route: string;
-  sectionLabel?: string;
 }
 
 @Component({
@@ -40,19 +40,28 @@ interface NavItem {
 export class ProtectedLayoutComponent {
   private readonly authStore = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
+
   readonly user = toSignal(inject(AuthService).user$);
 
   private readonly projectsStore = inject(ProjectsStore);
   readonly projects = toSignal(this.projectsStore.state$.pipe(map((s) => s.projects)), {
     initialValue: [],
   });
-  readonly projectsExpanded = signal(true);
 
-  readonly navItems: NavItem[] = [
+  readonly projectsExpanded = signal(true);
+  readonly SIDEBAR_LIMIT = 8;
+
+  readonly sidebarProjects = computed(() => this.projects().slice(0, this.SIDEBAR_LIMIT));
+  readonly hasMoreProjects = computed(() => this.projects().length > this.SIDEBAR_LIMIT);
+  readonly extraCount = computed(() => this.projects().length - this.SIDEBAR_LIMIT);
+
+  readonly mainNavItems: NavItem[] = [
     { label: 'Dashboard', icon: 'grid_view', route: '/dashboard' },
-    { label: 'Projects', icon: 'folder_open', route: '/projects', sectionLabel: 'Workspace' },
     { label: 'Tasks', icon: 'task_alt', route: '/tasks' },
-    { label: 'Settings', icon: 'settings', route: '/settings', sectionLabel: 'Account' },
+  ];
+
+  readonly accountNavItems: NavItem[] = [
+    { label: 'Settings', icon: 'settings', route: '/settings' },
   ];
 
   logout(): void {
@@ -60,11 +69,19 @@ export class ProtectedLayoutComponent {
   }
 
   toggleProjects(): void {
-    this.projectsExpanded.set(!this.projectsExpanded());
+    this.projectsExpanded.update((v) => !v);
   }
 
   openNewProject(): void {
     this.dialog.open(ProjectFormDialogComponent, { autoFocus: 'first-tabbable', width: '480px' });
+  }
+
+  openAllProjects(): void {
+    this.dialog.open(AllProjectsDialogComponent, {
+      data: this.projects(),
+      width: '520px',
+      autoFocus: false,
+    });
   }
 
   get userInitials(): string {

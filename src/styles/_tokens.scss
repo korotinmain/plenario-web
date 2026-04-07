@@ -19,11 +19,11 @@
   --pln-content-max-width: 1280px;
 
   // ── Shadows ───────────────────────────────────────────────────────────────
-  --pln-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --pln-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --pln-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --pln-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06);
-  --pln-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.14), 0 8px 16px rgba(0, 0, 0, 0.08);
+  --pln-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --pln-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --pln-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --pln-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.35);
+  --pln-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6), 0 8px 16px rgba(0, 0, 0, 0.4);
 
   // ── Sidebar (dark) ────────────────────────────────────────────────────────
   --pln-sidebar-bg: #0d1117;
@@ -38,30 +38,32 @@
   --pln-sidebar-accent: #3b82f6;
 
   // ── Content area ──────────────────────────────────────────────────────────
-  --pln-page-bg: #f4f4f5;
-  --pln-card-bg: #ffffff;
-  --pln-card-border: #e4e4e7;
-  --pln-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --pln-page-bg: #07080c;
+  --pln-card-bg: rgba(255, 255, 255, 0.035);
+  --pln-card-border: rgba(255, 255, 255, 0.07);
+  --pln-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --pln-card-hover-border: rgba(59, 130, 246, 0.25);
+  --pln-card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(59, 130, 246, 0.1);
 
   // ── Text hierarchy ────────────────────────────────────────────────────────
-  --pln-text-1: #18181b;
-  --pln-text-2: #3f3f46;
-  --pln-text-3: #71717a;
-  --pln-text-4: #a1a1aa;
+  --pln-text-1: rgba(255, 255, 255, 0.95);
+  --pln-text-2: rgba(255, 255, 255, 0.65);
+  --pln-text-3: rgba(148, 163, 184, 0.6);
+  --pln-text-4: rgba(255, 255, 255, 0.3);
 
   // ── Status tokens ─────────────────────────────────────────────────────────
-  --pln-status-active-bg: #ecfdf5;
-  --pln-status-active-color: #059669;
-  --pln-status-active-border: #a7f3d0;
-  --pln-status-hold-bg: #fffbeb;
-  --pln-status-hold-color: #b45309;
-  --pln-status-hold-border: #fde68a;
-  --pln-status-done-bg: #eff6ff;
-  --pln-status-done-color: #1d4ed8;
-  --pln-status-done-border: #bfdbfe;
-  --pln-status-archived-bg: #f4f4f5;
-  --pln-status-archived-color: #71717a;
-  --pln-status-archived-border: #e4e4e7;
+  --pln-status-active-bg: rgba(16, 185, 129, 0.12);
+  --pln-status-active-color: #34d399;
+  --pln-status-active-border: rgba(16, 185, 129, 0.2);
+  --pln-status-hold-bg: rgba(245, 158, 11, 0.10);
+  --pln-status-hold-color: #fbbf24;
+  --pln-status-hold-border: rgba(245, 158, 11, 0.18);
+  --pln-status-done-bg: rgba(37, 99, 235, 0.12);
+  --pln-status-done-color: #93c5fd;
+  --pln-status-done-border: rgba(59, 130, 246, 0.18);
+  --pln-status-archived-bg: rgba(255, 255, 255, 0.05);
+  --pln-status-archived-color: rgba(255, 255, 255, 0.35);
+  --pln-status-archived-border: rgba(255, 255, 255, 0.08);
 
   // ── Gradient presets ──────────────────────────────────────────────────────
   --pln-grad-violet: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
@@ -94,6 +96,16 @@
 
 .mat-mdc-dialog-surface {
   border-radius: 20px !important;
+  background: rgba(10, 12, 18, 0.92) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+}
+
+.cdk-overlay-backdrop.cdk-overlay-dark-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.6);
 }
 
 ::selection {

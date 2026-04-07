@@ -39,13 +39,14 @@
   }
 
   &--active {
-    background: #2563eb;
-    color: #fff;
+    background: rgba(37, 99, 235, 0.18);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.2);
     font-weight: 600;
 
     .filter-tab__count {
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
     }
   }
 
@@ -84,11 +85,9 @@
     border-color 0.18s;
 
   &:hover {
-    box-shadow:
-      0 4px 16px rgba(0, 0, 0, 0.08),
-      0 12px 32px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--pln-card-hover-shadow);
     transform: translateY(-2px);
-    border-color: #bfdbfe;
+    border-color: var(--pln-card-hover-border);
   }
 
   &__accent {

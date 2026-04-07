@@ -7,7 +7,7 @@ html {
       color: (
         primary: mat.$blue-palette,
         tertiary: mat.$cyan-palette,
-        theme-type: light,
+        theme-type: dark,
       ),
       typography: Inter,
       density: -1,
@@ -25,23 +25,23 @@ html {
       outlined-outline-width: 1.5px,
       outlined-focus-outline-width: 2px,
 
-      // Border colors — idle is transparent (filled-style look)
-      outlined-outline-color: transparent,
-      outlined-hover-outline-color: rgba(0, 0, 0, 0.12),
+      // Border colors — idle shows subtle dark outline
+      outlined-outline-color: rgba(255, 255, 255, 0.08),
+      outlined-hover-outline-color: rgba(255, 255, 255, 0.15),
       outlined-focus-outline-color: var(--mat-sys-primary),
       outlined-error-outline-color: var(--mat-sys-error),
       outlined-error-hover-outline-color: var(--mat-sys-error),
       outlined-error-focus-outline-color: var(--mat-sys-error),
       // Label colors
-      outlined-label-text-color: #9fa6b2,
-      outlined-hover-label-text-color: #6b7280,
+      outlined-label-text-color: rgba(148, 163, 184, 0.6),
+      outlined-hover-label-text-color: rgba(255, 255, 255, 0.55),
       outlined-focus-label-text-color: var(--mat-sys-primary),
       outlined-error-label-text-color: var(--mat-sys-error),
       outlined-error-focus-label-text-color: var(--mat-sys-error),
       outlined-error-hover-label-text-color: var(--mat-sys-error),
       // Input text & placeholder
-      outlined-input-text-color: var(--mat-sys-on-surface),
-      outlined-input-text-placeholder-color: #b0bac5,
+      outlined-input-text-color: rgba(255, 255, 255, 0.9),
+      outlined-input-text-placeholder-color: rgba(255, 255, 255, 0.25),
       outlined-caret-color: var(--mat-sys-primary),
       // Subscript (hint / error message area)
       subscript-text-size: 0.75rem,
@@ -51,9 +51,9 @@ html {
 }
 
 body {
-  color-scheme: light;
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
+  color-scheme: dark;
+  background-color: #07080c;
+  color: rgba(255, 255, 255, 0.95);
   font-family: 'Inter', sans-serif;
   margin: 0;
   height: 100%;

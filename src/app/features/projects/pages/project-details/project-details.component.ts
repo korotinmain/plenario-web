@@ -1,16 +1,15 @@
 import {
-  Component,
   ChangeDetectionStrategy,
-  inject,
+  Component,
   OnInit,
-  signal,
   computed,
+  inject,
+  signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe, NgClass, NgTemplateOutlet, TitleCasePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -21,568 +20,370 @@ import { Project, ProjectStatus } from '../../models/project.models';
 import { TasksStore } from '../../../tasks/data-access/tasks.store';
 import { TaskFormDialogComponent } from '../../../tasks/components/task-form-dialog/task-form-dialog.component';
 import { DeleteTaskDialogComponent } from '../../../tasks/components/delete-task-dialog/delete-task-dialog.component';
-import { Task, TaskStatus, TaskPriority } from '../../../tasks/models/task.models';
+import { Task, TaskStatus } from '../../../tasks/models/task.models';
 
-const STATUS_MAP: Record<ProjectStatus, { label: string; cssClass: string }> = {
-  active: { label: 'Active', cssClass: 'badge--active' },
-  on_hold: { label: 'On hold', cssClass: 'badge--hold' },
-  completed: { label: 'Completed', cssClass: 'badge--done' },
-  archived: { label: 'Archived', cssClass: 'badge--archived' },
+const STATUS_META: Record<ProjectStatus, { label: string; bg: string; text: string; border: string }> = {
+  active:    { label: 'Active',    bg: '#ecfdf5', text: '#059669', border: '#a7f3d0' },
+  on_hold:   { label: 'On Hold',   bg: '#fffbeb', text: '#b45309', border: '#fde68a' },
+  completed: { label: 'Completed', bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
+  archived:  { label: 'Archived',  bg: '#f4f4f5', text: '#71717a', border: '#e4e4e7' },
+};
+
+const PRIORITY_META: Record<string, { bg: string; text: string; dot: string }> = {
+  LOW:    { bg: '#f0f9ff', text: '#0369a1', dot: '#38bdf8' },
+  MEDIUM: { bg: '#fffbeb', text: '#92400e', dot: '#f59e0b' },
+  HIGH:   { bg: '#fff1f2', text: '#be123c', dot: '#f43f5e' },
 };
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [
-    RouterLink,
-    DatePipe,
-    NgClass,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatMenuModule,
-  ],
+  imports: [RouterLink, DatePipe, NgClass, NgTemplateOutlet, TitleCasePipe, MatButtonModule, MatIconModule, MatMenuModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  styles: [`
+    :host { display: block; animation: fadeInUp 0.24s cubic-bezier(0.22,1,0.36,1) both; }
+    .status-btn { transition: transform 0.12s ease; }
+    .status-btn:active { transform: scale(0.88); }
+    .task-row:hover .task-actions { opacity: 1; }
+    .task-actions { opacity: 0; transition: opacity 0.15s; }
+  `],
   template: `
-    <a routerLink="/projects" class="back-nav">
-      <mat-icon class="back-nav__icon">arrow_back</mat-icon>
-      <span>All projects</span>
-    </a>
+    <!-- ── Breadcrumb ───────────────────────────────────────────────────────── -->
+    <div class="flex items-center gap-2 mb-6">
+      <button (click)="goBack()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg
+               text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors text-sm font-medium">
+        <mat-icon style="font-size:16px;width:16px;height:16px;line-height:1">arrow_back</mat-icon>
+        Projects
+      </button>
+      @if (project()) {
+        <mat-icon class="text-slate-300" style="font-size:14px;width:14px;height:14px;line-height:1">chevron_right</mat-icon>
+        <span class="text-sm font-medium text-slate-800 truncate max-w-[220px]">{{ project()!.name }}</span>
+      }
+    </div>
 
+    <!-- ── Loading ──────────────────────────────────────────────────────────── -->
     @if (loading()) {
-      <div class="loading-state"><mat-spinner diameter="44" /></div>
-    } @else if (error()) {
-      <div class="error-card">
-        <div class="error-card__icon-wrap"><mat-icon>error_outline</mat-icon></div>
-        <h3 class="error-card__title">Project not found</h3>
-        <p class="error-card__text">{{ error() }}</p>
-        <a mat-flat-button routerLink="/projects">Back to projects</a>
+      <div class="flex items-center justify-center py-24">
+        <div class="w-10 h-10 rounded-full border-[3px] border-slate-200 border-t-[#4c68c0] animate-spin"></div>
       </div>
-    } @else if (project()) {
-      <div class="hero-card">
-        <div class="hero-card__banner" [style.background]="project()!.color ?? '#2563EB'">
-          <div class="hero-card__banner-overlay"></div>
+
+    <!-- ── Error ─────────────────────────────────────────────────────────────── -->
+    } @else if (error()) {
+      <div class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center mb-4">
+          <mat-icon class="text-red-400" style="font-size:28px;width:28px;height:28px">error_outline</mat-icon>
         </div>
-        <div class="hero-card__body">
-          <div class="hero-card__top">
-            <div class="hero-card__icon-circle" [style.background]="project()!.color ?? '#2563EB'">
-              <mat-icon>folder_open</mat-icon>
+        <h3 class="text-lg font-bold text-slate-900 mb-1">Project not found</h3>
+        <p class="text-sm text-slate-400 mb-5">{{ error() }}</p>
+        <button routerLink="/dashboard"
+                class="px-4 py-2 bg-[#4c68c0] hover:bg-[#3b5cb0] text-white text-sm font-semibold rounded-lg transition-colors">
+          Back to Dashboard
+        </button>
+      </div>
+
+    <!-- ── Content ───────────────────────────────────────────────────────────── -->
+    } @else if (project()) {
+
+      <!-- Project header card -->
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mb-5">
+        <!-- Color banner -->
+        <div class="h-[92px] relative" [style.background]="project()!.color ?? '#4c68c0'">
+          <div class="absolute inset-0 bg-gradient-to-br from-black/[0.08] to-transparent"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/[0.08] to-transparent"></div>
+        </div>
+
+        <!-- Body -->
+        <div class="px-7 pb-6">
+          <!-- Top row: floating icon + actions -->
+          <div class="flex items-end justify-between -mt-7 mb-5">
+            <div class="w-14 h-14 rounded-2xl border-[3px] border-white shadow-lg flex items-center
+                        justify-center flex-shrink-0"
+                 [style.background]="project()!.color ?? '#4c68c0'">
+              <mat-icon class="text-white" style="font-size:26px;width:26px;height:26px;line-height:1">
+                folder_open
+              </mat-icon>
             </div>
-            <div class="hero-card__actions">
-              <span class="status-badge" [ngClass]="statusInfo(project()!.status).cssClass">
-                {{ statusInfo(project()!.status).label }}
+            <div class="flex items-center gap-2.5">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
+                           uppercase tracking-wider border"
+                    [style.background]="statusMeta(project()!.status).bg"
+                    [style.color]="statusMeta(project()!.status).text"
+                    [style.border-color]="statusMeta(project()!.status).border">
+                {{ statusMeta(project()!.status).label }}
               </span>
-              <button mat-flat-button (click)="openEdit()"><mat-icon>edit</mat-icon>Edit</button>
+              <button (click)="openEdit()"
+                      class="flex items-center gap-1.5 px-3.5 h-9 rounded-xl bg-slate-100 hover:bg-slate-200
+                             text-slate-700 text-sm font-semibold transition-colors">
+                <mat-icon style="font-size:16px;width:16px;height:16px;line-height:1">edit</mat-icon>
+                Edit
+              </button>
             </div>
           </div>
-          <h1 class="hero-card__title">{{ project()!.name }}</h1>
+
+          <!-- Title & description -->
+          <h1 class="text-[1.625rem] font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
+            {{ project()!.name }}
+          </h1>
           @if (project()!.description) {
-            <p class="hero-card__desc">{{ project()!.description }}</p>
+            <p class="text-[0.9375rem] text-slate-500 leading-relaxed mb-4 max-w-2xl">
+              {{ project()!.description }}
+            </p>
           }
-          <div class="hero-card__meta">
-            <span class="meta-pill">
-              <mat-icon class="meta-pill__icon">calendar_today</mat-icon>
+
+          <!-- Meta row -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50
+                         border border-slate-100 text-xs font-medium text-slate-500">
+              <mat-icon style="font-size:12px;width:12px;height:12px;line-height:1">calendar_today</mat-icon>
               Created {{ project()!.createdAt | date: 'MMM d, y' }}
             </span>
-            <span class="meta-pill">
-              <mat-icon class="meta-pill__icon">update</mat-icon>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50
+                         border border-slate-100 text-xs font-medium text-slate-500">
+              <mat-icon style="font-size:12px;width:12px;height:12px;line-height:1">update</mat-icon>
               Updated {{ project()!.updatedAt | date: 'MMM d, y' }}
             </span>
           </div>
         </div>
       </div>
 
-      <div class="section-card">
-        <div class="section-card__header">
-          <h2 class="section-card__title">
-            <mat-icon class="section-icon">task_alt</mat-icon>Tasks
-          </h2>
-          <button mat-flat-button class="add-task-btn" (click)="openCreateTask()">
-            <mat-icon>add</mat-icon>New task
+      <!-- ── Stats strip ─────────────────────────────────────────────────────── -->
+      <div class="grid grid-cols-4 gap-3 mb-5">
+        <!-- Total -->
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4">
+          <p class="text-[0.625rem] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Total</p>
+          <p class="text-2xl font-extrabold text-slate-900 leading-none">{{ totalCount() }}</p>
+          <p class="text-xs text-slate-400 mt-1">tasks</p>
+        </div>
+        <!-- Done -->
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4">
+          <p class="text-[0.625rem] font-bold uppercase tracking-widest text-emerald-500 mb-1.5">Done</p>
+          <p class="text-2xl font-extrabold text-slate-900 leading-none">{{ doneTasks().length }}</p>
+          <p class="text-xs text-slate-400 mt-1">{{ progressPct() }}% complete</p>
+        </div>
+        <!-- In Progress -->
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-4">
+          <p class="text-[0.625rem] font-bold uppercase tracking-widest text-blue-500 mb-1.5">In Progress</p>
+          <p class="text-2xl font-extrabold text-slate-900 leading-none">{{ inProgressTasks().length }}</p>
+          <p class="text-xs text-slate-400 mt-1">active now</p>
+        </div>
+        <!-- Overdue -->
+        <div class="rounded-xl border shadow-sm p-4"
+             [class]="overdueCount() > 0 ? 'bg-red-50 border-red-100' : 'bg-white border-slate-100'">
+          <p class="text-[0.625rem] font-bold uppercase tracking-widest mb-1.5"
+             [class]="overdueCount() > 0 ? 'text-red-400' : 'text-slate-400'">Overdue</p>
+          <p class="text-2xl font-extrabold leading-none"
+             [class]="overdueCount() > 0 ? 'text-red-600' : 'text-slate-900'">{{ overdueCount() }}</p>
+          <p class="text-xs mt-1" [class]="overdueCount() > 0 ? 'text-red-400' : 'text-slate-400'">
+            past due date
+          </p>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      @if (totalCount() > 0) {
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm px-5 py-4 mb-5">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="text-sm font-semibold text-slate-700">Progress</span>
+            <span class="text-sm font-bold" [class]="progressPct() === 100 ? 'text-emerald-600' : 'text-slate-500'">
+              {{ progressPct() }}%
+            </span>
+          </div>
+          <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500 ease-out"
+                 [style.width.%]="progressPct()"
+                 [style.background]="progressPct() === 100 ? '#059669' : (project()!.color ?? '#4c68c0')">
+            </div>
+          </div>
+          @if (progressPct() === 100) {
+            <p class="text-xs text-emerald-600 font-medium mt-2">
+              🎉 All tasks complete!
+            </p>
+          }
+        </div>
+      }
+
+      <!-- ── Tasks section ───────────────────────────────────────────────────── -->
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <!-- Section header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                 [style.background]="(project()!.color ?? '#4c68c0') + '18'">
+              <mat-icon [style.color]="project()!.color ?? '#4c68c0'"
+                        style="font-size:17px;width:17px;height:17px;line-height:1">task_alt</mat-icon>
+            </div>
+            <h2 class="text-[0.9375rem] font-bold text-slate-900 tracking-tight">Tasks</h2>
+            @if (totalCount() > 0) {
+              <span class="px-2 py-0.5 rounded-full bg-slate-100 text-xs font-semibold text-slate-500">
+                {{ totalCount() }}
+              </span>
+            }
+          </div>
+          <button (click)="openCreateTask()"
+                  class="flex items-center gap-1.5 px-4 h-8 rounded-lg bg-[#4c68c0] hover:bg-[#3b5cb0]
+                         text-white text-xs font-semibold transition-colors">
+            <mat-icon style="font-size:14px;width:14px;height:14px;line-height:1">add</mat-icon>
+            Add task
           </button>
         </div>
 
+        <!-- Task list loading skeletons -->
         @if (tasksLoading()) {
-          @for (_ of [1, 2, 3]; track $index) {
-            <div class="task-row-skeleton">
-              <div class="skeleton skeleton-circle"></div>
-              <div class="skeleton-lines">
-                <div class="skeleton skeleton-text" style="width:55%"></div>
-                <div
-                  class="skeleton skeleton-text"
-                  style="width:30%;height:10px;margin-top:4px"
-                ></div>
+          @for (_ of [1,2,3]; track $index) {
+            <div class="flex items-center gap-3 px-6 py-3.5 border-b border-slate-50 last:border-0">
+              <div class="w-5 h-5 rounded-full bg-slate-100 animate-pulse flex-shrink-0"></div>
+              <div class="flex-1 space-y-1.5">
+                <div class="h-3.5 bg-slate-100 rounded animate-pulse" style="width:52%"></div>
+                <div class="h-2.5 bg-slate-50 rounded animate-pulse" style="width:28%"></div>
               </div>
-              <div
-                class="skeleton skeleton-text"
-                style="width:60px;height:20px;border-radius:10px;margin-left:auto"
-              ></div>
+              <div class="h-5 w-14 bg-slate-100 rounded-full animate-pulse"></div>
             </div>
           }
+
+        <!-- Empty state -->
         } @else if (projectTasks().length === 0) {
-          <div class="tasks-empty">
-            <div class="tcs-icon-wrap"><mat-icon>task_alt</mat-icon></div>
-            <div>
-              <p class="tcs-text">No tasks for this project yet.</p>
-              <button mat-button class="tcs-action" (click)="openCreateTask()">
-                Create first task
-              </button>
+          <div class="flex flex-col items-center py-14 text-center px-6">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+                 [style.background]="(project()!.color ?? '#4c68c0') + '15'">
+              <mat-icon [style.color]="project()!.color ?? '#4c68c0'"
+                        style="font-size:28px;width:28px;height:28px">task_alt</mat-icon>
             </div>
+            <p class="text-sm font-semibold text-slate-700 mb-1">No tasks yet</p>
+            <p class="text-xs text-slate-400 mb-4">Add tasks to start tracking progress on this project.</p>
+            <button (click)="openCreateTask()"
+                    class="flex items-center gap-1.5 px-4 h-8 rounded-lg bg-[#4c68c0] hover:bg-[#3b5cb0]
+                           text-white text-xs font-semibold transition-colors">
+              <mat-icon style="font-size:14px;width:14px;height:14px;line-height:1">add</mat-icon>
+              Create first task
+            </button>
           </div>
+
         } @else {
-          @for (task of projectTasks(); track task.id) {
-            <div class="task-row" [class.task-row--done]="task.status === 'DONE'">
-              <button
-                class="status-btn"
-                [class]="'status-btn--' + task.status"
-                (click)="cycleStatus(task)"
-                [title]="task.status"
-              >
-                @if (task.status === 'DONE') {
-                  <mat-icon>check_circle</mat-icon>
-                } @else if (task.status === 'IN_PROGRESS') {
-                  <mat-icon>pending</mat-icon>
-                } @else {
-                  <mat-icon>radio_button_unchecked</mat-icon>
-                }
-              </button>
-              <div class="task-info">
-                <span class="task-title">{{ task.title }}</span>
-                @if (task.dueDate) {
-                  <span class="task-due" [class.task-due--overdue]="isOverdue(task)">
-                    <mat-icon class="due-icon">schedule</mat-icon>
-                    {{ task.dueDate | date: 'MMM d' }}
-                  </span>
-                }
+          <!-- ── In Progress group ─────────────────────────────────────────── -->
+          @if (inProgressTasks().length > 0) {
+            <div class="border-b border-slate-100">
+              <div class="flex items-center gap-2 px-6 py-2.5 bg-blue-50/60">
+                <span class="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-500">
+                  In Progress
+                </span>
+                <span class="ml-auto text-xs font-semibold text-blue-400">{{ inProgressTasks().length }}</span>
               </div>
-              <span class="priority-chip priority-chip--{{ task.priority.toLowerCase() }}">{{
-                task.priority
-              }}</span>
-              <button mat-icon-button [matMenuTriggerFor]="taskMenu" class="task-more-btn">
-                <mat-icon>more_vert</mat-icon>
+              @for (task of inProgressTasks(); track task.id) {
+                <ng-container *ngTemplateOutlet="taskRow; context: { $implicit: task }"></ng-container>
+              }
+            </div>
+          }
+
+          <!-- ── To Do group ───────────────────────────────────────────────── -->
+          @if (todoTasks().length > 0) {
+            <div [class]="inProgressTasks().length > 0 ? 'border-b border-slate-100' : ''">
+              <div class="flex items-center gap-2 px-6 py-2.5 bg-slate-50/80">
+                <span class="w-2 h-2 rounded-full bg-slate-400 flex-shrink-0"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">To Do</span>
+                <span class="ml-auto text-xs font-semibold text-slate-400">{{ todoTasks().length }}</span>
+              </div>
+              @for (task of todoTasks(); track task.id) {
+                <ng-container *ngTemplateOutlet="taskRow; context: { $implicit: task }"></ng-container>
+              }
+            </div>
+          }
+
+          <!-- ── Done group (collapsible) ─────────────────────────────────── -->
+          @if (doneTasks().length > 0) {
+            <div>
+              <button (click)="doneExpanded.set(!doneExpanded())"
+                      class="w-full flex items-center gap-2 px-6 py-2.5 bg-slate-50/50
+                             hover:bg-slate-50 transition-colors">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Done</span>
+                <span class="ml-auto flex items-center gap-1.5 text-xs font-semibold text-slate-400">
+                  {{ doneTasks().length }}
+                  <mat-icon class="transition-transform duration-200"
+                            style="font-size:14px;width:14px;height:14px;line-height:1"
+                            [style.transform]="doneExpanded() ? 'rotate(0deg)' : 'rotate(-90deg)'">
+                    expand_more
+                  </mat-icon>
+                </span>
               </button>
-              <mat-menu #taskMenu="matMenu">
-                <button mat-menu-item (click)="openEditTask(task)">
-                  <mat-icon>edit</mat-icon>Edit
-                </button>
-                <button mat-menu-item class="danger-item" (click)="openDeleteTask(task)">
-                  <mat-icon>delete</mat-icon>Delete
-                </button>
-              </mat-menu>
+              @if (doneExpanded()) {
+                @for (task of doneTasks(); track task.id) {
+                  <ng-container *ngTemplateOutlet="taskRow; context: { $implicit: task }"></ng-container>
+                }
+              }
             </div>
           }
         }
       </div>
     }
+
+    <!-- ── Task row template ──────────────────────────────────────────────────── -->
+    <ng-template #taskRow let-task>
+      <div class="task-row group flex items-center gap-3 px-6 py-3.5 border-b border-slate-50
+                  last:border-0 hover:bg-slate-50/60 transition-colors">
+        <!-- Status toggle -->
+        <button class="status-btn flex-shrink-0 w-5 h-5 flex items-center justify-center"
+                (click)="cycleStatus(task)"
+                [title]="task.status">
+          @if (task.status === 'DONE') {
+            <mat-icon class="text-emerald-500" style="font-size:20px;width:20px;height:20px;line-height:1">
+              check_circle
+            </mat-icon>
+          } @else if (task.status === 'IN_PROGRESS') {
+            <mat-icon class="text-blue-500" style="font-size:20px;width:20px;height:20px;line-height:1">
+              pending
+            </mat-icon>
+          } @else {
+            <mat-icon class="text-slate-300 hover:text-slate-400"
+                      style="font-size:20px;width:20px;height:20px;line-height:1">
+              radio_button_unchecked
+            </mat-icon>
+          }
+        </button>
+
+        <!-- Task info -->
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium leading-snug truncate"
+             [class]="task.status === 'DONE' ? 'text-slate-400 line-through' : 'text-slate-800'">
+            {{ task.title }}
+          </p>
+          @if (task.dueDate) {
+            <p class="flex items-center gap-1 text-xs mt-0.5"
+               [class]="isOverdue(task) ? 'text-red-500' : 'text-slate-400'">
+              <mat-icon style="font-size:11px;width:11px;height:11px;line-height:1">
+                {{ isOverdue(task) ? 'warning_amber' : 'schedule' }}
+              </mat-icon>
+              {{ task.dueDate | date: 'MMM d' }}
+              @if (isOverdue(task)) { <span class="font-semibold">· overdue</span> }
+            </p>
+          }
+        </div>
+
+        <!-- Priority chip -->
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.6875rem] font-semibold flex-shrink-0"
+              [style.background]="priorityMeta(task.priority).bg"
+              [style.color]="priorityMeta(task.priority).text">
+          <span class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                [style.background]="priorityMeta(task.priority).dot"></span>
+          {{ task.priority | titlecase }}
+        </span>
+
+        <!-- Actions (appear on hover) -->
+        <div class="task-actions flex items-center gap-0.5 flex-shrink-0">
+          <button (click)="openEditTask(task)"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400
+                         hover:text-slate-700 hover:bg-slate-100 transition-colors">
+            <mat-icon style="font-size:15px;width:15px;height:15px;line-height:1">edit</mat-icon>
+          </button>
+          <button (click)="openDeleteTask(task)"
+                  class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400
+                         hover:text-red-500 hover:bg-red-50 transition-colors">
+            <mat-icon style="font-size:15px;width:15px;height:15px;line-height:1">delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </ng-template>
   `,
-  styles: [
-    `
-      :host {
-        display: block;
-        animation: fadeInUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
-      }
-
-      .back-nav {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--pln-text-3, #71717a);
-        text-decoration: none;
-        margin-bottom: 24px;
-        padding: 6px 10px 6px 6px;
-        border-radius: 8px;
-        transition:
-          background 0.13s,
-          color 0.13s;
-        &:hover {
-          background: rgba(0, 0, 0, 0.04);
-          color: var(--pln-text-1, #18181b);
-          text-decoration: none;
-        }
-      }
-      .back-nav__icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-      }
-
-      .hero-card {
-        background: var(--pln-card-bg, #fff);
-        border: 1px solid var(--pln-card-border, #e4e4e7);
-        border-radius: 20px;
-        overflow: hidden;
-        margin-bottom: 20px;
-        box-shadow: var(--pln-card-shadow);
-      }
-      .hero-card__banner {
-        height: 80px;
-        position: relative;
-        overflow: hidden;
-      }
-      .hero-card__banner-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.05));
-      }
-      .hero-card__body {
-        padding: 0 28px 28px;
-      }
-      .hero-card__top {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        margin-bottom: 16px;
-        margin-top: -28px;
-      }
-      .hero-card__icon-circle {
-        width: 56px;
-        height: 56px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 3px solid #fff;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-        flex-shrink: 0;
-        mat-icon {
-          color: #fff;
-          font-size: 26px;
-          width: 26px;
-          height: 26px;
-        }
-      }
-      .hero-card__actions {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .hero-card__title {
-        margin: 0 0 8px;
-        font-size: 1.75rem;
-        font-weight: 800;
-        color: var(--pln-text-1, #18181b);
-        letter-spacing: -0.04em;
-        line-height: 1.15;
-      }
-      .hero-card__desc {
-        margin: 0 0 18px;
-        font-size: 0.9375rem;
-        color: var(--pln-text-3, #71717a);
-        line-height: 1.65;
-        max-width: 640px;
-      }
-      .hero-card__meta {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-      .meta-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 10px;
-        border-radius: 20px;
-        background: #f4f4f5;
-        border: 1px solid #e4e4e7;
-        font-size: 0.75rem;
-        font-weight: 500;
-        color: var(--pln-text-3, #71717a);
-        &__icon {
-          font-size: 12px;
-          width: 12px;
-          height: 12px;
-        }
-      }
-      .status-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        white-space: nowrap;
-        &.badge--active {
-          background: #ecfdf5;
-          color: #059669;
-          border: 1px solid #a7f3d0;
-        }
-        &.badge--hold {
-          background: #fffbeb;
-          color: #b45309;
-          border: 1px solid #fde68a;
-        }
-        &.badge--done {
-          background: #eff6ff;
-          color: #1d4ed8;
-          border: 1px solid #bfdbfe;
-        }
-        &.badge--archived {
-          background: #f4f4f5;
-          color: #71717a;
-          border: 1px solid #e4e4e7;
-        }
-      }
-      .section-card {
-        background: var(--pln-card-bg, #fff);
-        border: 1px solid var(--pln-card-border, #e4e4e7);
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: var(--pln-card-shadow);
-      }
-      .section-card__header {
-        padding: 16px 24px;
-        border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .section-card__title {
-        margin: 0;
-        font-size: 0.9375rem;
-        font-weight: 700;
-        color: var(--pln-text-1, #18181b);
-        letter-spacing: -0.02em;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .section-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-        color: #2563eb;
-      }
-      .add-task-btn {
-        font-size: 0.8125rem;
-        font-weight: 600;
-        height: 32px;
-        line-height: 32px;
-        padding: 0 12px;
-        border-radius: 8px;
-        background: #2563eb;
-        color: #fff;
-        mat-icon {
-          font-size: 16px;
-          width: 16px;
-          height: 16px;
-          margin-right: 2px;
-        }
-      }
-      .task-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 20px;
-        border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
-        transition: background 0.1s;
-        &:last-child {
-          border-bottom: none;
-        }
-        &:hover {
-          background: rgba(0, 0, 0, 0.02);
-        }
-        &--done .task-title {
-          text-decoration: line-through;
-          color: var(--pln-text-3, #71717a);
-        }
-      }
-      .task-row-skeleton {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 14px 20px;
-        border-bottom: 1px solid var(--pln-card-border, #e4e4e7);
-        &:last-child {
-          border-bottom: none;
-        }
-      }
-      .skeleton-circle {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .skeleton-lines {
-        flex: 1;
-      }
-      .status-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        border-radius: 50%;
-        width: 28px;
-        height: 28px;
-        transition: background 0.1s;
-        mat-icon {
-          font-size: 22px;
-          width: 22px;
-          height: 22px;
-        }
-        &--TODO mat-icon {
-          color: #a1a1aa;
-        }
-        &--IN_PROGRESS mat-icon {
-          color: #2563eb;
-        }
-        &--DONE mat-icon {
-          color: #059669;
-        }
-        &:hover {
-          background: rgba(0, 0, 0, 0.05);
-        }
-      }
-      .task-info {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        min-width: 0;
-      }
-      .task-title {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: var(--pln-text-1, #18181b);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .task-due {
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        font-size: 0.75rem;
-        color: var(--pln-text-3, #71717a);
-        white-space: nowrap;
-        flex-shrink: 0;
-        &--overdue {
-          color: #ef4444;
-        }
-        .due-icon {
-          font-size: 11px;
-          width: 11px;
-          height: 11px;
-        }
-      }
-      .priority-chip {
-        font-size: 0.6875rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        padding: 2px 8px;
-        border-radius: 10px;
-        white-space: nowrap;
-        flex-shrink: 0;
-        &--low {
-          background: #f0fdf4;
-          color: #16a34a;
-          border: 1px solid #bbf7d0;
-        }
-        &--medium {
-          background: #fffbeb;
-          color: #b45309;
-          border: 1px solid #fde68a;
-        }
-        &--high {
-          background: #fef2f2;
-          color: #dc2626;
-          border: 1px solid #fecaca;
-        }
-      }
-      .task-more-btn {
-        flex-shrink: 0;
-      }
-      .danger-item {
-        color: #ef4444;
-      }
-      .tasks-empty {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        padding: 28px 24px;
-        color: var(--pln-text-3, #71717a);
-      }
-      .tcs-icon-wrap {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: rgba(37, 99, 235, 0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        mat-icon {
-          color: #2563eb;
-          font-size: 20px;
-          width: 20px;
-          height: 20px;
-        }
-      }
-      .tcs-text {
-        margin: 0 0 4px;
-        font-size: 0.875rem;
-        line-height: 1.55;
-      }
-      .tcs-action {
-        font-size: 0.8125rem;
-        color: #2563eb;
-        padding: 0;
-      }
-      .loading-state {
-        display: flex;
-        justify-content: center;
-        margin-top: 80px;
-      }
-      .error-card {
-        background: var(--pln-card-bg, #fff);
-        border: 1px solid var(--pln-card-border, #e4e4e7);
-        border-radius: 20px;
-        padding: 56px 40px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        max-width: 480px;
-      }
-      .error-card__icon-wrap {
-        width: 56px;
-        height: 56px;
-        border-radius: 16px;
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 16px;
-        mat-icon {
-          color: #ef4444;
-          font-size: 28px;
-          width: 28px;
-          height: 28px;
-        }
-      }
-      .error-card__title {
-        margin: 0 0 8px;
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: var(--pln-text-1, #18181b);
-      }
-      .error-card__text {
-        margin: 0 0 24px;
-        font-size: 0.875rem;
-        color: var(--pln-text-3, #71717a);
-      }
-    `,
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectDetailsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -593,6 +394,7 @@ export class ProjectDetailsComponent implements OnInit {
   readonly project = signal<Project | null>(null);
   readonly loading = signal(true);
   readonly error = signal<string | null>(null);
+  readonly doneExpanded = signal(false);
 
   private readonly allTasks = toSignal(this.tasksStore.state$.pipe(map((s) => s.tasks)), {
     initialValue: [] as Task[],
@@ -600,13 +402,28 @@ export class ProjectDetailsComponent implements OnInit {
   readonly tasksLoading = toSignal(this.tasksStore.state$.pipe(map((s) => s.loading)), {
     initialValue: true,
   });
+
   readonly projectTasks = computed(() => {
     const id = this.project()?.id;
     return this.allTasks().filter((t) => t.projectId === id);
   });
 
-  statusInfo(status: ProjectStatus) {
-    return STATUS_MAP[status] ?? { label: status, cssClass: '' };
+  readonly todoTasks = computed(() => this.projectTasks().filter((t) => t.status === 'TODO'));
+  readonly inProgressTasks = computed(() => this.projectTasks().filter((t) => t.status === 'IN_PROGRESS'));
+  readonly doneTasks = computed(() => this.projectTasks().filter((t) => t.status === 'DONE'));
+  readonly totalCount = computed(() => this.projectTasks().length);
+  readonly progressPct = computed(() => {
+    const total = this.totalCount();
+    return total > 0 ? Math.round((this.doneTasks().length / total) * 100) : 0;
+  });
+  readonly overdueCount = computed(() => this.projectTasks().filter((t) => this.isOverdue(t)).length);
+
+  statusMeta(status: ProjectStatus) {
+    return STATUS_META[status] ?? STATUS_META.active;
+  }
+
+  priorityMeta(priority: string) {
+    return PRIORITY_META[priority] ?? PRIORITY_META['MEDIUM'];
   }
 
   isOverdue(task: Task): boolean {
@@ -621,6 +438,10 @@ export class ProjectDetailsComponent implements OnInit {
       DONE: 'TODO',
     };
     this.tasksStore.update(task.id, { status: next[task.status] }).subscribe();
+  }
+
+  goBack(): void {
+    history.back();
   }
 
   ngOnInit(): void {

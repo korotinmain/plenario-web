@@ -1,168 +1,217 @@
 <mat-sidenav-container class="app-container">
   <mat-sidenav class="app-sidebar" mode="side" opened [fixedInViewport]="true">
-  <div class="flex flex-col h-full">
-
-    <!-- ── Brand ─────────────────────────────────────────────────────── -->
-    <div class="relative z-10 flex items-center gap-3 px-4 py-[18px] border-b border-slate-100 flex-shrink-0">
-      <div class="brand-icon w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-           style="background: var(--pln-grad-brand)">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="min-w-0">
-        <div class="text-[0.9375rem] font-bold text-slate-900 tracking-tight leading-tight">Plenario</div>
-        <div class="text-[0.6875rem] font-medium text-slate-400 tracking-wide leading-tight mt-0.5">Personal planner</div>
-      </div>
-    </div>
-
-    <!-- ── Navigation ─────────────────────────────────────────────────── -->
-    <nav class="relative z-10 flex-1 overflow-y-auto px-2.5 pt-3 pb-2 flex flex-col" aria-label="Main navigation">
-
-      <!-- Main nav items -->
-      <div class="flex flex-col gap-0.5">
-        @for (item of mainNavItems; track item.route) {
-          <a class="nav-item relative flex items-center gap-2.5 px-3 h-9 rounded-lg
-                    text-[0.8125rem] font-medium text-slate-500 no-underline overflow-hidden
-                    transition-all duration-150 hover:bg-slate-50 hover:text-slate-700"
-             [routerLink]="item.route"
-             routerLinkActive="nav-item--active"
-             matRipple [matRippleColor]="'rgba(76,104,192,0.06)'"
-             [attr.aria-label]="item.label">
-            <mat-icon class="flex-shrink-0" style="font-size:18px;width:18px;height:18px;line-height:1">{{ item.icon }}</mat-icon>
-            <span class="truncate">{{ item.label }}</span>
-          </a>
-        }
-      </div>
-
-      <!-- ── Projects section ───────────────────────────────────────── -->
-      <div class="mt-5">
-        <!-- Section header -->
-        <div class="flex items-center h-7 px-2 mb-1 gap-0.5">
-          <span class="flex-1 text-[0.625rem] font-bold uppercase tracking-[0.08em] text-slate-400 select-none">
-            My Projects
-          </span>
-          <button
-            (click)="openNewProject(); $event.stopPropagation()"
-            matTooltip="New project"
-            aria-label="New project"
-            class="w-6 h-6 flex items-center justify-center rounded-md text-slate-400
-                   hover:bg-slate-100 hover:text-[#4c68c0] transition-colors">
-            <mat-icon style="font-size:15px;width:15px;height:15px;line-height:1">add</mat-icon>
-          </button>
-          <button
-            (click)="toggleProjects()"
-            [attr.aria-label]="projectsExpanded() ? 'Collapse projects' : 'Expand projects'"
-            class="w-6 h-6 flex items-center justify-center rounded-md text-slate-400
-                   hover:bg-slate-100 hover:text-slate-600 transition-colors">
-            <mat-icon
-              class="transition-transform duration-200"
-              style="font-size:16px;width:16px;height:16px;line-height:1"
-              [style.transform]="projectsExpanded() ? 'rotate(0deg)' : 'rotate(-90deg)'">
-              expand_more
-            </mat-icon>
-          </button>
+    <div class="flex flex-col h-full">
+      <!-- ── Brand ─────────────────────────────────────────────────────── -->
+      <div
+        class="relative z-10 flex items-center gap-3 px-4 py-[18px] border-b border-slate-100 flex-shrink-0"
+      >
+        <div
+          class="brand-icon w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+          style="background: var(--pln-grad-brand)"
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
         </div>
-
-        <!-- Project list -->
-        @if (projectsExpanded()) {
-          <div class="flex flex-col gap-0.5">
-            @if (projects().length === 0) {
-              <button
-                (click)="openNewProject()"
-                class="flex items-center gap-2 mx-1 px-2 py-2 rounded-lg border border-dashed
-                       border-slate-200 text-slate-400 hover:border-[#4c68c0] hover:text-[#4c68c0]
-                       hover:bg-blue-50/50 transition-all text-xs font-medium w-full">
-                <mat-icon style="font-size:14px;width:14px;height:14px;line-height:1">add_circle_outline</mat-icon>
-                Create first project
-              </button>
-            } @else {
-              @for (p of sidebarProjects(); track p.id) {
-                <a class="project-item relative flex items-center gap-2.5 px-3 h-8 rounded-lg no-underline
-                          text-[0.8125rem] font-medium text-slate-500 overflow-hidden
-                          transition-all duration-150 hover:bg-slate-50 hover:text-slate-700"
-                   [routerLink]="['/projects', p.id]"
-                   routerLinkActive="project-item--active"
-                   matRipple [matRippleColor]="'rgba(76,104,192,0.06)'">
-                  <span class="w-2 h-2 rounded-full flex-shrink-0 ring-[1.5px] ring-white"
-                        [style.background]="p.color ?? '#4c68c0'"></span>
-                  <span class="flex-1 truncate">{{ p.name }}</span>
-                </a>
-              }
-              @if (hasMoreProjects()) {
-                <button
-                  (click)="openAllProjects()"
-                  class="flex items-center gap-1.5 px-3 h-7 rounded-lg w-full mt-0.5
-                         text-[0.75rem] font-medium text-slate-400 hover:text-[#4c68c0]
-                         hover:bg-blue-50/60 transition-colors">
-                  <mat-icon style="font-size:13px;width:13px;height:13px;line-height:1">more_horiz</mat-icon>
-                  <span>{{ extraCount() }} more…</span>
-                </button>
-              }
-            }
+        <div class="min-w-0">
+          <div class="text-[0.9375rem] font-bold text-slate-900 tracking-tight leading-tight">
+            Plenario
           </div>
-        }
+          <div
+            class="text-[0.6875rem] font-medium text-slate-400 tracking-wide leading-tight mt-0.5"
+          >
+            Personal planner
+          </div>
+        </div>
       </div>
 
-      <!-- Spacer pushes account section to bottom -->
-      <div class="flex-1"></div>
-
-      <!-- ── Account section ────────────────────────────────────────── -->
-      <div class="pb-1">
-        <div class="text-[0.625rem] font-bold uppercase tracking-[0.08em] text-slate-400 px-2 pb-1 pt-2 select-none">
-          Account
-        </div>
+      <!-- ── Navigation ─────────────────────────────────────────────────── -->
+      <nav
+        class="relative z-10 flex-1 overflow-y-auto px-2.5 pt-3 pb-2 flex flex-col"
+        aria-label="Main navigation"
+      >
+        <!-- Main nav items -->
         <div class="flex flex-col gap-0.5">
-          @for (item of accountNavItems; track item.route) {
-            <a class="nav-item relative flex items-center gap-2.5 px-3 h-9 rounded-lg
-                      text-[0.8125rem] font-medium text-slate-500 no-underline overflow-hidden
-                      transition-all duration-150 hover:bg-slate-50 hover:text-slate-700"
-               [routerLink]="item.route"
-               routerLinkActive="nav-item--active"
-               matRipple [matRippleColor]="'rgba(76,104,192,0.06)'"
-               [attr.aria-label]="item.label">
-              <mat-icon class="flex-shrink-0" style="font-size:18px;width:18px;height:18px;line-height:1">{{ item.icon }}</mat-icon>
+          @for (item of mainNavItems; track item.route) {
+            <a
+              class="nav-item relative flex items-center gap-2.5 px-3 h-9 rounded-lg text-[0.8125rem] font-medium text-slate-500 no-underline overflow-hidden transition-all duration-150 hover:bg-slate-50 hover:text-slate-700"
+              [routerLink]="item.route"
+              routerLinkActive="nav-item--active"
+              matRipple
+              [matRippleColor]="'rgba(76,104,192,0.06)'"
+              [attr.aria-label]="item.label"
+            >
+              <mat-icon
+                class="flex-shrink-0"
+                style="font-size: 18px; width: 18px; height: 18px; line-height: 1"
+                >{{ item.icon }}</mat-icon
+              >
               <span class="truncate">{{ item.label }}</span>
             </a>
           }
         </div>
-      </div>
 
-    </nav>
-
-    <!-- ── User footer ────────────────────────────────────────────────── -->
-    <div class="relative z-10 flex items-center gap-2 px-3 py-3 border-t border-slate-100 flex-shrink-0">
-      @if (user()) {
-        <div class="flex items-center gap-2.5 flex-1 min-w-0 px-2 py-1.5 rounded-xl
-                    hover:bg-slate-50 transition-colors cursor-default">
-          <div class="user-avatar w-[30px] h-[30px] rounded-full flex items-center justify-center
-                      text-white text-[0.6875rem] font-bold tracking-wide flex-shrink-0"
-               style="background: var(--pln-grad-brand); box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px rgba(37,99,235,0.25);"
-               [attr.aria-label]="user()!.email">
-            {{ userInitials }}
-          </div>
-          <div class="flex flex-col min-w-0 gap-0">
-            <span class="text-[0.8125rem] font-semibold text-slate-800 truncate leading-tight">
-              {{ user()!.name ?? user()!.email }}
+        <!-- ── Projects section ───────────────────────────────────────── -->
+        <div class="mt-5">
+          <!-- Section header -->
+          <div class="flex items-center h-7 px-2 mb-1 gap-0.5">
+            <span
+              class="flex-1 text-[0.625rem] font-bold uppercase tracking-[0.08em] text-slate-400 select-none"
+            >
+              My Projects
             </span>
-            @if (user()!.name) {
-              <span class="text-[0.6875rem] text-slate-400 truncate leading-tight">{{ user()!.email }}</span>
+            <button
+              (click)="openNewProject(); $event.stopPropagation()"
+              matTooltip="New project"
+              aria-label="New project"
+              class="w-6 h-6 flex items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-[#4c68c0] transition-colors"
+            >
+              <mat-icon style="font-size: 15px; width: 15px; height: 15px; line-height: 1"
+                >add</mat-icon
+              >
+            </button>
+            <button
+              (click)="toggleProjects()"
+              [attr.aria-label]="projectsExpanded() ? 'Collapse projects' : 'Expand projects'"
+              class="w-6 h-6 flex items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+            >
+              <mat-icon
+                class="transition-transform duration-200"
+                style="font-size: 16px; width: 16px; height: 16px; line-height: 1"
+                [style.transform]="projectsExpanded() ? 'rotate(0deg)' : 'rotate(-90deg)'"
+              >
+                expand_more
+              </mat-icon>
+            </button>
+          </div>
+
+          <!-- Project list -->
+          @if (projectsExpanded()) {
+            <div class="flex flex-col gap-0.5">
+              @if (projects().length === 0) {
+                <button
+                  (click)="openNewProject()"
+                  class="flex items-center gap-2 mx-1 px-2 py-2 rounded-lg border border-dashed border-slate-200 text-slate-400 hover:border-[#4c68c0] hover:text-[#4c68c0] hover:bg-blue-50/50 transition-all text-xs font-medium w-full"
+                >
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px; line-height: 1"
+                    >add_circle_outline</mat-icon
+                  >
+                  Create first project
+                </button>
+              } @else {
+                @for (p of sidebarProjects(); track p.id) {
+                  <a
+                    class="project-item relative flex items-center gap-2.5 px-3 h-8 rounded-lg no-underline text-[0.8125rem] font-medium text-slate-500 overflow-hidden transition-all duration-150 hover:bg-slate-50 hover:text-slate-700"
+                    [routerLink]="['/projects', p.id]"
+                    routerLinkActive="project-item--active"
+                    matRipple
+                    [matRippleColor]="'rgba(76,104,192,0.06)'"
+                  >
+                    <span
+                      class="w-2 h-2 rounded-full flex-shrink-0 ring-[1.5px] ring-white"
+                      [style.background]="p.color ?? '#4c68c0'"
+                    ></span>
+                    <span class="flex-1 truncate">{{ p.name }}</span>
+                  </a>
+                }
+                @if (hasMoreProjects()) {
+                  <button
+                    (click)="openAllProjects()"
+                    class="flex items-center gap-1.5 px-3 h-7 rounded-lg w-full mt-0.5 text-[0.75rem] font-medium text-slate-400 hover:text-[#4c68c0] hover:bg-blue-50/60 transition-colors"
+                  >
+                    <mat-icon style="font-size: 13px; width: 13px; height: 13px; line-height: 1"
+                      >more_horiz</mat-icon
+                    >
+                    <span>{{ extraCount() }} more…</span>
+                  </button>
+                }
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Spacer pushes account section to bottom -->
+        <div class="flex-1"></div>
+
+        <!-- ── Account section ────────────────────────────────────────── -->
+        <div class="pb-1">
+          <div
+            class="text-[0.625rem] font-bold uppercase tracking-[0.08em] text-slate-400 px-2 pb-1 pt-2 select-none"
+          >
+            Account
+          </div>
+          <div class="flex flex-col gap-0.5">
+            @for (item of accountNavItems; track item.route) {
+              <a
+                class="nav-item relative flex items-center gap-2.5 px-3 h-9 rounded-lg text-[0.8125rem] font-medium text-slate-500 no-underline overflow-hidden transition-all duration-150 hover:bg-slate-50 hover:text-slate-700"
+                [routerLink]="item.route"
+                routerLinkActive="nav-item--active"
+                matRipple
+                [matRippleColor]="'rgba(76,104,192,0.06)'"
+                [attr.aria-label]="item.label"
+              >
+                <mat-icon
+                  class="flex-shrink-0"
+                  style="font-size: 18px; width: 18px; height: 18px; line-height: 1"
+                  >{{ item.icon }}</mat-icon
+                >
+                <span class="truncate">{{ item.label }}</span>
+              </a>
             }
           </div>
         </div>
-      }
-      <button
-        class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 flex-shrink-0
-               hover:bg-red-50 hover:text-red-500 transition-colors"
-        matTooltip="Sign out"
-        (click)="logout()"
-        aria-label="Sign out">
-        <mat-icon style="font-size:18px;width:18px;height:18px;line-height:1">logout</mat-icon>
-      </button>
-    </div>
+      </nav>
 
-  </div>
+      <!-- ── User footer ────────────────────────────────────────────────── -->
+      <div
+        class="relative z-10 flex items-center gap-2 px-3 py-3 border-t border-slate-100 flex-shrink-0"
+      >
+        @if (user()) {
+          <div
+            class="flex items-center gap-2.5 flex-1 min-w-0 px-2 py-1.5 rounded-xl hover:bg-slate-50 transition-colors cursor-default"
+          >
+            <div
+              class="user-avatar w-[30px] h-[30px] rounded-full flex items-center justify-center text-white text-[0.6875rem] font-bold tracking-wide flex-shrink-0"
+              style="
+                background: var(--pln-grad-brand);
+                box-shadow:
+                  0 0 0 2px #fff,
+                  0 0 0 3.5px rgba(37, 99, 235, 0.25);
+              "
+              [attr.aria-label]="user()!.email"
+            >
+              {{ userInitials }}
+            </div>
+            <div class="flex flex-col min-w-0 gap-0">
+              <span class="text-[0.8125rem] font-semibold text-slate-800 truncate leading-tight">
+                {{ user()!.name ?? user()!.email }}
+              </span>
+              @if (user()!.name) {
+                <span class="text-[0.6875rem] text-slate-400 truncate leading-tight">{{
+                  user()!.email
+                }}</span>
+              }
+            </div>
+          </div>
+        }
+        <button
+          class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 flex-shrink-0 hover:bg-red-50 hover:text-red-500 transition-colors"
+          matTooltip="Sign out"
+          (click)="logout()"
+          aria-label="Sign out"
+        >
+          <mat-icon style="font-size: 18px; width: 18px; height: 18px; line-height: 1"
+            >logout</mat-icon
+          >
+        </button>
+      </div>
+    </div>
   </mat-sidenav>
 
   <!-- ── Main content ──────────────────────────────────────────────────── -->

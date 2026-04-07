@@ -7,7 +7,7 @@ html {
       color: (
         primary: mat.$blue-palette,
         tertiary: mat.$cyan-palette,
-        theme-type: dark,
+        theme-type: light,
       ),
       typography: Inter,
       density: -1,
@@ -25,23 +25,23 @@ html {
       outlined-outline-width: 1.5px,
       outlined-focus-outline-width: 2px,
 
-      // Border colors — idle shows subtle dark outline
-      outlined-outline-color: rgba(255, 255, 255, 0.08),
-      outlined-hover-outline-color: rgba(255, 255, 255, 0.15),
+      // Border colors — idle shows subtle outline
+      outlined-outline-color: rgba(0, 0, 0, 0.12),
+      outlined-hover-outline-color: rgba(0, 0, 0, 0.25),
       outlined-focus-outline-color: var(--mat-sys-primary),
       outlined-error-outline-color: var(--mat-sys-error),
       outlined-error-hover-outline-color: var(--mat-sys-error),
       outlined-error-focus-outline-color: var(--mat-sys-error),
       // Label colors
-      outlined-label-text-color: rgba(148, 163, 184, 0.6),
-      outlined-hover-label-text-color: rgba(255, 255, 255, 0.55),
+      outlined-label-text-color: rgba(71, 85, 105, 0.75),
+      outlined-hover-label-text-color: rgba(30, 41, 59, 0.75),
       outlined-focus-label-text-color: var(--mat-sys-primary),
       outlined-error-label-text-color: var(--mat-sys-error),
       outlined-error-focus-label-text-color: var(--mat-sys-error),
       outlined-error-hover-label-text-color: var(--mat-sys-error),
       // Input text & placeholder
-      outlined-input-text-color: rgba(255, 255, 255, 0.9),
-      outlined-input-text-placeholder-color: rgba(255, 255, 255, 0.25),
+      outlined-input-text-color: #111827,
+      outlined-input-text-placeholder-color: rgba(107, 114, 128, 0.6),
       outlined-caret-color: var(--mat-sys-primary),
       // Subscript (hint / error message area)
       subscript-text-size: 0.75rem,
@@ -51,9 +51,9 @@ html {
 }
 
 body {
-  color-scheme: dark;
-  background-color: #07080c;
-  color: rgba(255, 255, 255, 0.95);
+  color-scheme: light;
+  background-color: #f4f7fb;
+  color: #111827;
   font-family: 'Inter', sans-serif;
   margin: 0;
   height: 100%;

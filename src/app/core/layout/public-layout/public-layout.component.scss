@@ -18,7 +18,7 @@
 .brand-panel {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, #1a0b3f 0%, #4c1d95 38%, #5b21b6 65%, #6d28d9 100%);
+  background: linear-gradient(160deg, #1e3a8a 0%, #1d4ed8 38%, #2563eb 65%, #3b82f6 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,7 +38,7 @@
   &--a {
     width: 340px;
     height: 340px;
-    background: radial-gradient(circle, rgba(167, 139, 250, 0.45) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(147, 197, 253, 0.45) 0%, transparent 70%);
     top: -80px;
     right: -60px;
     animation: blob-float 9s ease-in-out infinite;
@@ -47,7 +47,7 @@
   &--b {
     width: 280px;
     height: 280px;
-    background: radial-gradient(circle, rgba(196, 181, 253, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(191, 219, 254, 0.3) 0%, transparent 70%);
     bottom: -60px;
     left: -50px;
     animation: blob-float 11s ease-in-out infinite 2s;
@@ -56,7 +56,7 @@
   &--c {
     width: 200px;
     height: 200px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(96, 165, 250, 0.4) 0%, transparent 70%);
     top: 40%;
     left: 28%;
     animation: blob-float 7s ease-in-out infinite 1s;
@@ -145,12 +145,12 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #c4b5fd;
+  color: #bfdbfe;
 
   svg {
     width: 11px;
@@ -170,7 +170,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #07080c;
+  background: #f4f7fb;
 }
 
 .mobile-brand {

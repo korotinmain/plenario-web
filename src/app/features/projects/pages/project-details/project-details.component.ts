@@ -72,6 +72,185 @@ const PRIORITY_META: Record<string, { bg: string; text: string; dot: string }> =
         opacity: 0;
         transition: opacity 0.15s;
       }
+      /* Two-column layout */
+      .proj-content-grid {
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 16px;
+        align-items: start;
+      }
+      @media (max-width: 900px) {
+        .proj-content-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .proj-tasks-col {
+        min-width: 0;
+      }
+      /* Context panel cards */
+      .proj-context-col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .ctx-card {
+        background: #fff;
+        border: 1px solid rgba(0,0,0,0.07);
+        border-radius: 14px;
+        padding: 14px 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      }
+      .ctx-card-hd {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 10px;
+      }
+      .ctx-card-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+      .ctx-card-title {
+        margin: 0;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #1e293b;
+        letter-spacing: -0.01em;
+      }
+      .ctx-empty-text {
+        margin: 0;
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+      .ctx-next-task {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .ctx-next-task-name {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1e293b;
+        line-height: 1.3;
+      }
+      .ctx-next-task-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+
+        mat-icon {
+          font-size: 13px;
+          width: 13px;
+          height: 13px;
+        }
+
+        &--overdue {
+          color: #dc2626;
+        }
+      }
+      .ctx-activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .ctx-activity-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .ctx-activity-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #cbd5e1;
+        flex-shrink: 0;
+
+        &--done {
+          background: #34d399;
+        }
+        &--active {
+          background: #60a5fa;
+        }
+      }
+      .ctx-activity-name {
+        flex: 1;
+        font-size: 0.8125rem;
+        color: #334155;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .ctx-activity-status {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: #94a3b8;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .ctx-notes-text {
+        margin: 0;
+        font-size: 0.8125rem;
+        color: #475569;
+        line-height: 1.55;
+      }
+      .ctx-card--add {
+        padding: 12px;
+      }
+      .ctx-add-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        height: 36px;
+        border-radius: 10px;
+        border: none;
+        color: #fff;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: filter 0.15s;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+
+        &:hover {
+          filter: brightness(1.08);
+        }
+      }
+      .ctx-insights {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .ctx-insight-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .ctx-insight-label {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+      .ctx-insight-val {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #1e293b;
+
+        &--good {
+          color: #059669;
+        }
+        &--danger {
+          color: #dc2626;
+        }
+      }
     `,
   ],
   template: `
@@ -282,6 +461,10 @@ const PRIORITY_META: Record<string, { bg: string; text: string; dot: string }> =
         </div>
       }
 
+      <!-- ── Two-column content grid ─────────────────────────────────────────── -->
+      <div class="proj-content-grid">
+        <!-- ── Left column: Tasks ─────────────────────────────────────────────── -->
+        <div class="proj-tasks-col">
       <!-- ── Tasks section ───────────────────────────────────────────────────── -->
       <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <!-- Section header -->
@@ -430,6 +613,106 @@ const PRIORITY_META: Record<string, { bg: string; text: string; dot: string }> =
           }
         }
       </div>
+        </div><!-- end proj-tasks-col -->
+
+        <!-- ── Right column: Context panel ───────────────────────────────────── -->
+        <div class="proj-context-col">
+          <!-- Next due task -->
+          <div class="ctx-card">
+            <div class="ctx-card-hd">
+              <mat-icon class="ctx-card-icon" [style.color]="project()!.color ?? '#4c68c0'">schedule</mat-icon>
+              <h3 class="ctx-card-title">Next Due</h3>
+            </div>
+            @if (nextDueTask()) {
+              <div class="ctx-next-task">
+                <span class="ctx-next-task-name">{{ nextDueTask()!.title }}</span>
+                <span class="ctx-next-task-date" [class.ctx-next-task-date--overdue]="isOverdue(nextDueTask()!)">
+                  <mat-icon>{{ isOverdue(nextDueTask()!) ? 'warning_amber' : 'event' }}</mat-icon>
+                  {{ nextDueTask()!.dueDate | date: 'MMM d' }}
+                </span>
+              </div>
+            } @else {
+              <p class="ctx-empty-text">No upcoming deadlines.</p>
+            }
+          </div>
+
+          <!-- Recent activity -->
+          <div class="ctx-card">
+            <div class="ctx-card-hd">
+              <mat-icon class="ctx-card-icon" [style.color]="project()!.color ?? '#4c68c0'">history</mat-icon>
+              <h3 class="ctx-card-title">Recent Activity</h3>
+            </div>
+            @if (recentActivity().length === 0) {
+              <p class="ctx-empty-text">No activity yet.</p>
+            } @else {
+              <div class="ctx-activity-list">
+                @for (task of recentActivity(); track task.id) {
+                  <div class="ctx-activity-row">
+                    @if (task.status === 'DONE') {
+                      <span class="ctx-activity-dot ctx-activity-dot--done"></span>
+                    } @else if (task.status === 'IN_PROGRESS') {
+                      <span class="ctx-activity-dot ctx-activity-dot--active"></span>
+                    } @else {
+                      <span class="ctx-activity-dot"></span>
+                    }
+                    <span class="ctx-activity-name">{{ task.title }}</span>
+                    <span class="ctx-activity-status">{{ task.status | titlecase }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Project notes -->
+          @if (project()!.description) {
+            <div class="ctx-card">
+              <div class="ctx-card-hd">
+                <mat-icon class="ctx-card-icon" [style.color]="project()!.color ?? '#4c68c0'">notes</mat-icon>
+                <h3 class="ctx-card-title">Notes</h3>
+              </div>
+              <p class="ctx-notes-text">{{ project()!.description }}</p>
+            </div>
+          }
+
+          <!-- Quick add -->
+          <div class="ctx-card ctx-card--add">
+            <button
+              (click)="openCreateTask()"
+              class="ctx-add-btn"
+              [style.background]="project()!.color ?? '#4c68c0'"
+            >
+              <mat-icon>add</mat-icon>
+              Add task to project
+            </button>
+          </div>
+
+          <!-- Lightweight insights -->
+          <div class="ctx-card">
+            <div class="ctx-card-hd">
+              <mat-icon class="ctx-card-icon" [style.color]="project()!.color ?? '#4c68c0'">insights</mat-icon>
+              <h3 class="ctx-card-title">Insights</h3>
+            </div>
+            <div class="ctx-insights">
+              <div class="ctx-insight-row">
+                <span class="ctx-insight-label">Completion</span>
+                <span class="ctx-insight-val" [class.ctx-insight-val--good]="progressPct() >= 75">{{ progressPct() }}%</span>
+              </div>
+              <div class="ctx-insight-row">
+                <span class="ctx-insight-label">Open tasks</span>
+                <span class="ctx-insight-val">{{ todoTasks().length + inProgressTasks().length }}</span>
+              </div>
+              <div class="ctx-insight-row">
+                <span class="ctx-insight-label">At risk</span>
+                <span class="ctx-insight-val" [class.ctx-insight-val--danger]="overdueCount() > 0">{{ overdueCount() }}</span>
+              </div>
+              <div class="ctx-insight-row">
+                <span class="ctx-insight-label">Updated</span>
+                <span class="ctx-insight-val">{{ project()!.updatedAt | date: 'MMM d' }}</span>
+              </div>
+            </div>
+          </div>
+        </div><!-- end proj-context-col -->
+      </div><!-- end proj-content-grid -->
     }
 
     <!-- ── Task row template ──────────────────────────────────────────────────── -->
@@ -562,6 +845,21 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
   });
   readonly overdueCount = computed(
     () => this.projectTasks().filter((t) => this.isOverdue(t)).length,
+  );
+
+  /** Next due task: earliest due, not done */
+  readonly nextDueTask = computed(() => {
+    const tasks = this.projectTasks()
+      .filter((t) => t.status !== 'DONE' && t.dueDate)
+      .sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? ''));
+    return tasks[0] ?? null;
+  });
+
+  /** Recent activity: last 5 tasks by updatedAt */
+  readonly recentActivity = computed(() =>
+    [...this.projectTasks()]
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+      .slice(0, 5),
   );
 
   statusMeta(status: ProjectStatus) {

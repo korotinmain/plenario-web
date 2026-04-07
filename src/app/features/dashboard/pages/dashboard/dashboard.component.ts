@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -25,15 +25,31 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
       <div class="hero-left">
         <h1 class="hero-greeting">{{ greeting() }}</h1>
         <p class="hero-date">{{ today | date: 'EEEE, MMMM d, y' }}</p>
+        <div class="hero-stats">
+          @if (overdueCount() > 0) {
+            <span class="hero-stat hero-stat--danger">
+              <mat-icon>warning_amber</mat-icon>
+              {{ overdueCount() }} overdue
+            </span>
+          }
+          <span class="hero-stat">
+            <mat-icon>today</mat-icon>
+            {{ dueTodayCount() }} planned today
+          </span>
+          <span class="hero-stat">
+            <mat-icon>folder_open</mat-icon>
+            {{ activeProjectsCount() }} active projects
+          </span>
+        </div>
       </div>
       <div class="hero-actions">
         <button mat-stroked-button class="btn-secondary" (click)="openCreateTask()">
           <mat-icon>add</mat-icon>
           New task
         </button>
-        <button mat-flat-button class="btn-primary" (click)="openCreateProject()">
-          <mat-icon>add</mat-icon>
-          New project
+        <button mat-flat-button class="btn-primary" (click)="openPlanToday()">
+          <mat-icon>calendar_today</mat-icon>
+          Plan today
         </button>
       </div>
     </div>
@@ -47,27 +63,17 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
       </div>
     } @else {
       <div class="kpi-strip stagger-cards">
-        <!-- Projects -->
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon--blue">
-            <mat-icon>folder_open</mat-icon>
+        <!-- Overdue -->
+        <div class="kpi-card" [class.kpi-card--alert]="overdueCount() > 0">
+          <div class="kpi-icon" [class]="overdueCount() > 0 ? 'kpi-icon--red' : 'kpi-icon--green'">
+            <mat-icon>{{ overdueCount() > 0 ? 'warning_amber' : 'check_circle' }}</mat-icon>
           </div>
           <div class="kpi-body">
-            <div class="kpi-value">{{ totalProjects() }}</div>
-            <div class="kpi-label">Projects</div>
-            <div class="kpi-sub">{{ activeProjectsCount() }} active</div>
-          </div>
-        </div>
-
-        <!-- Open tasks -->
-        <div class="kpi-card">
-          <div class="kpi-icon kpi-icon--violet">
-            <mat-icon>task_alt</mat-icon>
-          </div>
-          <div class="kpi-body">
-            <div class="kpi-value">{{ openTasks() }}</div>
-            <div class="kpi-label">Open tasks</div>
-            <div class="kpi-sub">{{ inProgressCount() }} in progress</div>
+            <div class="kpi-value" [class.kpi-value--red]="overdueCount() > 0">
+              {{ overdueCount() }}
+            </div>
+            <div class="kpi-label">Overdue</div>
+            <div class="kpi-sub">{{ upcomingCount() }} upcoming</div>
           </div>
         </div>
 
@@ -83,17 +89,27 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
           </div>
         </div>
 
-        <!-- Overdue -->
-        <div class="kpi-card" [class.kpi-card--alert]="overdueCount() > 0">
-          <div class="kpi-icon" [class]="overdueCount() > 0 ? 'kpi-icon--red' : 'kpi-icon--green'">
-            <mat-icon>{{ overdueCount() > 0 ? 'warning_amber' : 'check_circle' }}</mat-icon>
+        <!-- In progress -->
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--blue">
+            <mat-icon>pending</mat-icon>
           </div>
           <div class="kpi-body">
-            <div class="kpi-value" [class.kpi-value--red]="overdueCount() > 0">
-              {{ overdueCount() }}
-            </div>
-            <div class="kpi-label">Overdue</div>
-            <div class="kpi-sub">{{ upcomingCount() }} upcoming</div>
+            <div class="kpi-value">{{ inProgressCount() }}</div>
+            <div class="kpi-label">In progress</div>
+            <div class="kpi-sub">{{ openTasks() }} open total</div>
+          </div>
+        </div>
+
+        <!-- Completed this week -->
+        <div class="kpi-card">
+          <div class="kpi-icon kpi-icon--green">
+            <mat-icon>task_alt</mat-icon>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value">{{ completedThisWeekCount() }}</div>
+            <div class="kpi-label">Done this week</div>
+            <div class="kpi-sub">{{ completedTodayCount() }} today</div>
           </div>
         </div>
       </div>
@@ -241,6 +257,123 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
             }
           </div>
         }
+      </div>
+    </div>
+
+    <!-- ── This Week ─────────────────────────────────────────────────────── -->
+    <div class="week-section">
+      <div class="week-hd">
+        <div>
+          <h2 class="week-title">This Week</h2>
+          <p class="week-sub">Upcoming deadlines · {{ thisWeekTasks().length }} tasks</p>
+        </div>
+        <button mat-button class="add-task-btn" (click)="openCreateTask()">
+          <mat-icon>add</mat-icon>
+          Add task
+        </button>
+      </div>
+
+      @if (tasksLoading()) {
+        <div class="week-list">
+          @for (_ of [1, 2, 3]; track $index) {
+            <div class="week-task-skeleton"></div>
+          }
+        </div>
+      } @else if (thisWeekTasks().length === 0) {
+        <div class="week-empty">
+          <div class="week-empty__icon">
+            <mat-icon>event_available</mat-icon>
+          </div>
+          <div>
+            <p class="week-empty__title">Clear week ahead</p>
+            <p class="week-empty__sub">No tasks due in the next 7 days. A good time to plan ahead.</p>
+          </div>
+        </div>
+      } @else {
+        <div class="week-list">
+          @for (task of thisWeekTasks(); track task.id) {
+            <div class="week-task-row" [class.week-task-row--today]="task.dueDate?.slice(0,10) === todayStr">
+              <button
+                class="toggle-btn"
+                [class]="'toggle-btn--' + task.status"
+                (click)="cycleStatus(task)"
+                title="Cycle status"
+              >
+                @if (task.status === 'DONE') {
+                  <mat-icon>check_circle</mat-icon>
+                } @else if (task.status === 'IN_PROGRESS') {
+                  <mat-icon>pending</mat-icon>
+                } @else {
+                  <mat-icon>radio_button_unchecked</mat-icon>
+                }
+              </button>
+              <div class="week-task-body">
+                <span class="week-task-name" [class.week-task-name--done]="task.status === 'DONE'">{{ task.title }}</span>
+                @if (getProjectName(task.projectId)) {
+                  <span class="week-task-proj">{{ getProjectName(task.projectId) }}</span>
+                }
+              </div>
+              @if (task.dueDate) {
+                <span class="week-due-chip" [class.week-due-chip--today]="task.dueDate.slice(0,10) === todayStr">
+                  {{ task.dueDate.slice(0,10) === todayStr ? 'Today' : (task.dueDate | date:'EEE, MMM d') }}
+                </span>
+              }
+              <span class="prio-dot" [class]="'prio-dot--' + task.priority.toLowerCase()" [title]="task.priority"></span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Quick Capture ──────────────────────────────────────────────────── -->
+    <div class="quick-capture">
+      <div class="quick-capture-hd">
+        <div class="quick-capture-icon">
+          <mat-icon>bolt</mat-icon>
+        </div>
+        <div>
+          <h2 class="quick-capture-title">Quick Capture</h2>
+          <p class="quick-capture-sub">Add a task instantly</p>
+        </div>
+      </div>
+      <div class="quick-capture-form">
+        <input
+          type="text"
+          class="quick-input"
+          placeholder="Task title..."
+          [value]="quickTitle()"
+          (input)="quickTitle.set($any($event.target).value)"
+          (keydown.enter)="submitQuickCapture()"
+        />
+        <select
+          class="quick-select"
+          [value]="quickProjectId()"
+          (change)="quickProjectId.set($any($event.target).value)"
+        >
+          <option value="">No project</option>
+          @for (p of projectsList(); track p.id) {
+            <option [value]="p.id">{{ p.name }}</option>
+          }
+        </select>
+        <input
+          type="date"
+          class="quick-date"
+          [value]="quickDueDate()"
+          (change)="quickDueDate.set($any($event.target).value)"
+        />
+        <button
+          mat-flat-button
+          class="quick-add-btn"
+          (click)="submitQuickCapture()"
+          [disabled]="!quickTitle().trim() || quickSaving()"
+        >
+          @if (quickSaving()) {
+            <mat-icon>hourglass_empty</mat-icon>
+          } @else {
+            <mat-icon>add</mat-icon>
+          }
+          Add task
+        </button>
       </div>
     </div>
 
@@ -857,6 +990,324 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
         color: #4c68c0 !important;
         padding: 0 4px;
       }
+
+      // ── Hero stats ────────────────────────────────────────────────────────
+      .hero-stats {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .hero-stat {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--pln-text-3);
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 20px;
+        padding: 4px 12px 4px 8px;
+
+        mat-icon {
+          font-size: 14px;
+          width: 14px;
+          height: 14px;
+        }
+
+        &--danger {
+          color: #dc2626;
+          background: rgba(220, 38, 38, 0.07);
+        }
+      }
+
+      // ── This Week ─────────────────────────────────────────────────────────
+      .week-section {
+        margin-top: 24px;
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        border-radius: 18px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+      }
+
+      .week-hd {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 22px 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+
+      .week-title {
+        margin: 0 0 3px;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--pln-text-1);
+        letter-spacing: -0.02em;
+      }
+
+      .week-sub {
+        margin: 0;
+        font-size: 0.75rem;
+        color: var(--pln-text-3);
+      }
+
+      .week-list {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .week-task-skeleton {
+        height: 52px;
+        background: linear-gradient(90deg, #f8fafc 25%, #f1f5f9 50%, #f8fafc 75%);
+        background-size: 400% 100%;
+        animation: shimmer 1.6s ease infinite;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      }
+
+      .week-task-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 22px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        transition: background 0.12s;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background: #f8fafc;
+        }
+
+        &--today {
+          background: rgba(76, 104, 192, 0.03);
+        }
+      }
+
+      .week-task-body {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .week-task-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--pln-text-1);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &--done {
+          text-decoration: line-through;
+          color: var(--pln-text-3);
+        }
+      }
+
+      .week-task-proj {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--pln-text-3);
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+        padding: 1px 6px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .week-due-chip {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--pln-text-3);
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 20px;
+        padding: 2px 8px;
+        white-space: nowrap;
+        flex-shrink: 0;
+
+        &--today {
+          color: #4c68c0;
+          background: rgba(76, 104, 192, 0.1);
+        }
+      }
+
+      .week-empty {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 40px 24px;
+
+        &__icon {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          background: rgba(5, 150, 105, 0.08);
+          color: #059669;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          mat-icon {
+            font-size: 22px;
+            width: 22px;
+            height: 22px;
+          }
+        }
+
+        &__title {
+          margin: 0 0 3px;
+          font-size: 0.9375rem;
+          font-weight: 600;
+          color: var(--pln-text-2);
+        }
+
+        &__sub {
+          margin: 0;
+          font-size: 0.8125rem;
+          color: var(--pln-text-3);
+          line-height: 1.5;
+        }
+      }
+
+      // ── Quick Capture ─────────────────────────────────────────────────────
+      .quick-capture {
+        margin-top: 20px;
+        margin-bottom: 32px;
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        border-radius: 18px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        padding: 20px 22px;
+      }
+
+      .quick-capture-hd {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .quick-capture-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(76, 104, 192, 0.1);
+        color: #4c68c0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .quick-capture-title {
+        margin: 0 0 2px;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--pln-text-1);
+        letter-spacing: -0.02em;
+      }
+
+      .quick-capture-sub {
+        margin: 0;
+        font-size: 0.75rem;
+        color: var(--pln-text-3);
+      }
+
+      .quick-capture-form {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .quick-input {
+        flex: 1;
+        min-width: 200px;
+        height: 40px;
+        padding: 0 14px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--pln-text-1);
+        background: #f8fafc;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        outline: none;
+        transition: border-color 0.15s, background 0.15s;
+
+        &::placeholder {
+          color: var(--pln-text-3);
+        }
+
+        &:focus {
+          background: #fff;
+          border-color: #4c68c0;
+        }
+      }
+
+      .quick-select {
+        height: 40px;
+        padding: 0 10px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--pln-text-2);
+        background: #f8fafc;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.15s;
+
+        &:focus {
+          border-color: #4c68c0;
+        }
+      }
+
+      .quick-date {
+        height: 40px;
+        padding: 0 10px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--pln-text-2);
+        background: #f8fafc;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.15s;
+
+        &:focus {
+          border-color: #4c68c0;
+        }
+      }
+
+      .quick-add-btn {
+        height: 40px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        background: #4c68c0 !important;
+        color: #fff !important;
+        border-radius: 10px !important;
+        flex-shrink: 0;
+
+        &[disabled] {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+      }
     `,
   ],
 })
@@ -970,7 +1421,49 @@ export class DashboardComponent implements OnInit {
       .slice(0, 8),
   );
 
-  // ── Greeting ──────────────────────────────────────────────────────────────
+  readonly completedThisWeekCount = computed(() => {
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return this.allTasks().filter(
+      (t) => t.status === 'DONE' && new Date(t.updatedAt) >= weekAgo,
+    ).length;
+  });
+
+  /** Upcoming tasks due in the next 7 days (not done), sorted by dueDate */
+  readonly thisWeekTasks = computed(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+    const nextWeekStr = nextWeek.toISOString().slice(0, 10);
+    return this.allTasks()
+      .filter(
+        (t) =>
+          t.status !== 'DONE' &&
+          t.dueDate &&
+          t.dueDate.slice(0, 10) >= this.todayStr &&
+          t.dueDate.slice(0, 10) <= nextWeekStr,
+      )
+      .sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? ''))
+      .slice(0, 10);
+  });
+
+  /** All projects for quick capture dropdown */
+  readonly projectsList = computed(() =>
+    [...this.projects()].sort((a, b) => a.name.localeCompare(b.name)),
+  );
+
+  // ── Quick Capture state ───────────────────────────────────────────────────
+  readonly quickTitle = signal('');
+  readonly quickProjectId = signal('');
+  readonly quickDueDate = signal('');
+  readonly quickSaving = signal(false);
+
+  getProjectName(projectId: string | null): string | null {
+    if (!projectId) return null;
+    return this.projects().find((p) => p.id === projectId)?.name ?? null;
+  }
   readonly greeting = computed(() => {
     const name = this.user()?.name;
     const first = name?.split(' ')[0];
@@ -1007,13 +1500,36 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  openCreateProject(): void {
-    this.dialog.open(ProjectFormDialogComponent, {
+  openPlanToday(): void {
+    this.dialog.open(TaskFormDialogComponent, {
+      data: { task: null, defaultDueDate: this.todayStr },
       autoFocus: 'first-tabbable',
-      width: '480px',
+      width: '520px',
     });
   }
 
+  submitQuickCapture(): void {
+    const title = this.quickTitle().trim();
+    if (!title || this.quickSaving()) return;
+    this.quickSaving.set(true);
+    this.tasksStore
+      .create({
+        title,
+        projectId: this.quickProjectId() || undefined,
+        dueDate: this.quickDueDate() || undefined,
+        status: 'TODO',
+        priority: 'MEDIUM',
+      })
+      .subscribe({
+        complete: () => {
+          this.quickTitle.set('');
+          this.quickProjectId.set('');
+          this.quickDueDate.set('');
+          this.quickSaving.set(false);
+        },
+        error: () => this.quickSaving.set(false),
+      });
+  }
   openAllProjects(): void {
     this.dialog.open(AllProjectsDialogComponent, {
       data: this.projects(),

@@ -35,8 +35,8 @@ import { NgClass } from '@angular/common';
         class="block w-full px-4 py-[15px] rounded-2xl border text-[0.9375rem] font-medium text-slate-900 placeholder:text-slate-400/70 outline-none transition-all duration-200"
         [ngClass]="
           hasError
-            ? 'bg-rose-50 border-rose-300 focus:bg-white focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
-            : 'bg-slate-100 border-transparent focus:bg-white focus:border-violet-600 focus:ring-2 focus:ring-violet-600/20'
+            ? 'bg-rose-50 border-rose-300 focus:bg-white focus:border-rose-400 focus:ring-0'
+            : 'bg-slate-100 border-transparent focus:bg-white focus:border-[#4c68c0] focus:ring-0'
         "
       />
 

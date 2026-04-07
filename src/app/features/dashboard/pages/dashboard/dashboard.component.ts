@@ -100,72 +100,7 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
 
     <!-- ── Main grid ──────────────────────────────────────────────────────── -->
     <div class="dash-grid">
-      <!-- ── Projects panel ────────────────────────────────────────────── -->
-      <div class="panel">
-        <div class="panel-hd">
-          <div>
-            <h2 class="panel-title">Projects</h2>
-            <p class="panel-sub">{{ activeProjectsCount() }} active · {{ totalProjects() }} total</p>
-          </div>
-          <a routerLink="/projects" class="panel-viewall">
-            View all
-            <mat-icon>arrow_forward</mat-icon>
-          </a>
-        </div>
-
-        @if (loading()) {
-          <div class="proj-list">
-            @for (_ of [1, 2, 3, 4, 5]; track $index) {
-              <div class="proj-skeleton"></div>
-            }
-          </div>
-        } @else if (projectsWithStats().length === 0) {
-          <div class="panel-empty">
-            <div class="panel-empty__icon-wrap">
-              <mat-icon>rocket_launch</mat-icon>
-            </div>
-            <div>
-              <p class="panel-empty__title">No projects yet</p>
-              <p class="panel-empty__sub">Create your first project to start tracking work.</p>
-            </div>
-          </div>
-        } @else {
-          <div class="proj-list">
-            @for (p of projectsWithStats(); track p.id) {
-              <a [routerLink]="['/projects', p.id]" class="proj-row">
-                <span class="proj-color-dot" [style.background]="p.color ?? '#4c68c0'"></span>
-                <div class="proj-content">
-                  <div class="proj-row-top">
-                    <span class="proj-name">{{ p.name }}</span>
-                    <span class="proj-status-pill" [class]="'pill--' + p.status">
-                      {{ statusLabel(p.status) }}
-                    </span>
-                  </div>
-                  @if (p.total > 0) {
-                    <div class="proj-progress-row">
-                      <div class="prog-track">
-                        <div
-                          class="prog-fill"
-                          [style.width.%]="p.pct"
-                          [style.background]="p.pct === 100 ? '#059669' : (p.color ?? '#4c68c0')"
-                        ></div>
-                      </div>
-                      <span class="prog-label">{{ p.done }}/{{ p.total }}</span>
-                      <span class="prog-pct" [class.prog-pct--done]="p.pct === 100">
-                        {{ p.pct }}%
-                      </span>
-                    </div>
-                  } @else {
-                    <div class="proj-no-tasks">No tasks yet</div>
-                  }
-                </div>
-              </a>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- ── Focus panel ──────────────────────────────────────────────── -->
+      <!-- ── Focus panel (left / wide) ────────────────────────────────── -->
       <div class="panel panel--focus">
         <div class="panel-hd">
           <div>
@@ -238,6 +173,71 @@ import { Task, TaskStatus } from '../../../tasks/models/task.models';
               <mat-icon>add</mat-icon>
               Add task for today
             </button>
+          </div>
+        }
+      </div>
+
+      <!-- ── Projects panel (right / narrow) ──────────────────────────── -->
+      <div class="panel">
+        <div class="panel-hd">
+          <div>
+            <h2 class="panel-title">Projects</h2>
+            <p class="panel-sub">{{ activeProjectsCount() }} active · {{ totalProjects() }} total</p>
+          </div>
+          <a routerLink="/projects" class="panel-viewall">
+            View all
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+
+        @if (loading()) {
+          <div class="proj-list">
+            @for (_ of [1, 2, 3, 4, 5]; track $index) {
+              <div class="proj-skeleton"></div>
+            }
+          </div>
+        } @else if (projectsWithStats().length === 0) {
+          <div class="panel-empty">
+            <div class="panel-empty__icon-wrap">
+              <mat-icon>rocket_launch</mat-icon>
+            </div>
+            <div>
+              <p class="panel-empty__title">No projects yet</p>
+              <p class="panel-empty__sub">Create your first project to start tracking work.</p>
+            </div>
+          </div>
+        } @else {
+          <div class="proj-list">
+            @for (p of projectsWithStats(); track p.id) {
+              <a [routerLink]="['/projects', p.id]" class="proj-row">
+                <span class="proj-color-dot" [style.background]="p.color ?? '#4c68c0'"></span>
+                <div class="proj-content">
+                  <div class="proj-row-top">
+                    <span class="proj-name">{{ p.name }}</span>
+                    <span class="proj-status-pill" [class]="'pill--' + p.status">
+                      {{ statusLabel(p.status) }}
+                    </span>
+                  </div>
+                  @if (p.total > 0) {
+                    <div class="proj-progress-row">
+                      <div class="prog-track">
+                        <div
+                          class="prog-fill"
+                          [style.width.%]="p.pct"
+                          [style.background]="p.pct === 100 ? '#059669' : (p.color ?? '#4c68c0')"
+                        ></div>
+                      </div>
+                      <span class="prog-label">{{ p.done }}/{{ p.total }}</span>
+                      <span class="prog-pct" [class.prog-pct--done]="p.pct === 100">
+                        {{ p.pct }}%
+                      </span>
+                    </div>
+                  } @else {
+                    <div class="proj-no-tasks">No tasks yet</div>
+                  }
+                </div>
+              </a>
+            }
           </div>
         }
       </div>

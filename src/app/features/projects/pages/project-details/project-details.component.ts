@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe, NgClass, NgTemplateOutlet, TitleCasePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet, TitleCasePipe } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -40,7 +40,7 @@ const PRIORITY_META: Record<string, { bg: string; text: string; dot: string }> =
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [RouterLink, DatePipe, NgClass, NgTemplateOutlet, TitleCasePipe, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [RouterLink, DatePipe, NgTemplateOutlet, TitleCasePipe, MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
     :host { display: block; animation: fadeInUp 0.24s cubic-bezier(0.22,1,0.36,1) both; }
@@ -87,52 +87,47 @@ const PRIORITY_META: Record<string, { bg: string; text: string; dot: string }> =
     } @else if (project()) {
 
       <!-- Project header card -->
-      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm mb-5" style="overflow: visible">
-        <!-- Color banner (overflow hidden separately so rounded corners apply) -->
-        <div class="h-[92px] relative rounded-t-2xl overflow-hidden" [style.background]="project()!.color ?? '#4c68c0'">
-          <div class="absolute inset-0 bg-gradient-to-br from-black/[0.08] to-transparent"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-black/[0.08] to-transparent"></div>
-        </div>
+      <div class="rounded-2xl border border-slate-100 shadow-sm mb-5 overflow-hidden">
 
-        <!-- Body -->
-        <div class="px-7 pb-6">
-          <!-- Top row: floating icon + actions -->
-          <div class="flex items-end justify-between -mt-7 mb-5">
-            <div class="w-14 h-14 rounded-2xl border-[3px] border-white shadow-lg flex items-center
-                        justify-center flex-shrink-0"
-                 [style.background]="project()!.color ?? '#4c68c0'">
-              <mat-icon class="text-white" style="font-size:26px;width:26px;height:26px;line-height:1">
-                folder_open
-              </mat-icon>
+        <!-- Colored header section -->
+        <div class="relative px-7 py-6" [style.background]="project()!.color ?? '#4c68c0'">
+          <div class="absolute inset-0 bg-gradient-to-br from-white/[0.10] to-black/[0.14]"></div>
+          <div class="relative flex items-center justify-between gap-4">
+            <!-- Icon + Title -->
+            <div class="flex items-center gap-4 min-w-0">
+              <div class="w-12 h-12 rounded-xl bg-white/20 border border-white/30
+                          flex items-center justify-center flex-shrink-0">
+                <mat-icon class="text-white" style="font-size:24px;width:24px;height:24px;line-height:1">
+                  folder_open
+                </mat-icon>
+              </div>
+              <h1 class="text-[1.5rem] font-extrabold text-white tracking-tight leading-tight truncate">
+                {{ project()!.name }}
+              </h1>
             </div>
-            <div class="flex items-center gap-2.5">
+            <!-- Status + Edit -->
+            <div class="flex items-center gap-2.5 flex-shrink-0">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
-                           uppercase tracking-wider border"
-                    [style.background]="statusMeta(project()!.status).bg"
-                    [style.color]="statusMeta(project()!.status).text"
-                    [style.border-color]="statusMeta(project()!.status).border">
+                           uppercase tracking-wider bg-white/20 border border-white/30 text-white">
                 {{ statusMeta(project()!.status).label }}
               </span>
               <button (click)="openEdit()"
-                      class="flex items-center gap-1.5 px-3.5 h-9 rounded-xl bg-slate-100 hover:bg-slate-200
-                             text-slate-700 text-sm font-semibold transition-colors">
-                <mat-icon style="font-size:16px;width:16px;height:16px;line-height:1">edit</mat-icon>
+                      class="flex items-center gap-1.5 px-3.5 h-8 rounded-xl bg-white/20 border border-white/30
+                             hover:bg-white/30 text-white text-sm font-semibold transition-colors">
+                <mat-icon style="font-size:15px;width:15px;height:15px;line-height:1">edit</mat-icon>
                 Edit
               </button>
             </div>
           </div>
+        </div>
 
-          <!-- Title & description -->
-          <h1 class="text-[1.625rem] font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
-            {{ project()!.name }}
-          </h1>
+        <!-- White body: description + meta -->
+        <div class="bg-white px-7 py-5">
           @if (project()!.description) {
             <p class="text-[0.9375rem] text-slate-500 leading-relaxed mb-4 max-w-2xl">
               {{ project()!.description }}
             </p>
           }
-
-          <!-- Meta row -->
           <div class="flex items-center gap-2 flex-wrap">
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50
                          border border-slate-100 text-xs font-medium text-slate-500">

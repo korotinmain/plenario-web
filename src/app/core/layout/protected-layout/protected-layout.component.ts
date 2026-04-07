@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
@@ -37,7 +37,7 @@ interface NavItem {
   styleUrl: './protected-layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProtectedLayoutComponent {
+export class ProtectedLayoutComponent implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
 
@@ -56,7 +56,7 @@ export class ProtectedLayoutComponent {
   readonly extraCount = computed(() => this.projects().length - this.SIDEBAR_LIMIT);
 
   readonly mainNavItems: NavItem[] = [
-    { label: 'Dashboard', icon: 'grid_view', route: '/dashboard' },
+    { label: 'Dashboard', icon: 'space_dashboard', route: '/dashboard' },
     { label: 'Tasks', icon: 'task_alt', route: '/tasks' },
   ];
 
@@ -66,6 +66,10 @@ export class ProtectedLayoutComponent {
 
   logout(): void {
     this.authStore.logout();
+  }
+
+  ngOnInit(): void {
+    this.projectsStore.load();
   }
 
   toggleProjects(): void {

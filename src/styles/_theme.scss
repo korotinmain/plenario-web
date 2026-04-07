@@ -20,29 +20,29 @@ html {
   // as mat.theme(), so they reliably override the defaults set above.
   @include mat.form-field-overrides(
     (
-      // Shape & outline width
+      // Shape — no outline width needed (borders are transparent)
       outlined-container-shape: 16px,
-      outlined-outline-width: 1.5px,
-      outlined-focus-outline-width: 2px,
+      outlined-outline-width: 0,
+      outlined-focus-outline-width: 0,
 
-      // Border colors — idle shows subtle outline
-      outlined-outline-color: rgba(0, 0, 0, 0.12),
-      outlined-hover-outline-color: rgba(0, 0, 0, 0.25),
-      outlined-focus-outline-color: var(--mat-sys-primary),
+      // Borders fully transparent — filled look, no outline ring
+      outlined-outline-color: transparent,
+      outlined-hover-outline-color: transparent,
+      outlined-focus-outline-color: transparent,
       outlined-error-outline-color: var(--mat-sys-error),
       outlined-error-hover-outline-color: var(--mat-sys-error),
       outlined-error-focus-outline-color: var(--mat-sys-error),
-      // Label colors
-      outlined-label-text-color: rgba(71, 85, 105, 0.75),
-      outlined-hover-label-text-color: rgba(30, 41, 59, 0.75),
-      outlined-focus-label-text-color: var(--mat-sys-primary),
+      // Label colors — muted slate, softer on focus
+      outlined-label-text-color: rgba(71, 85, 105, 0.7),
+      outlined-hover-label-text-color: rgba(30, 41, 59, 0.7),
+      outlined-focus-label-text-color: #4b6cb7,
       outlined-error-label-text-color: var(--mat-sys-error),
       outlined-error-focus-label-text-color: var(--mat-sys-error),
       outlined-error-hover-label-text-color: var(--mat-sys-error),
       // Input text & placeholder
-      outlined-input-text-color: #111827,
-      outlined-input-text-placeholder-color: rgba(107, 114, 128, 0.6),
-      outlined-caret-color: var(--mat-sys-primary),
+      outlined-input-text-color: #1e293b,
+      outlined-input-text-placeholder-color: rgba(100, 116, 139, 0.55),
+      outlined-caret-color: #4b6cb7,
       // Subscript (hint / error message area)
       subscript-text-size: 0.75rem,
       subscript-text-line-height: 1.5

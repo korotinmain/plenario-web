@@ -13,34 +13,34 @@
 
 // ── All structural overrides under html prefix ────────────────────────────────
 html {
-  // ── 2. Idle: soft gray fill, no visible border ────────────────────────────
+  // ── 2. Idle: soft cool-gray fill, no border ───────────────────────────────
   .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
-    background: var(--mat-sys-surface-container-high);
+    background: #f1f5f9;
     box-shadow: none;
     transition:
       background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
       box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  // ── 3. Hover: slightly darker fill ───────────────────────────────────────
+  // ── 3. Hover: slightly deeper fill ───────────────────────────────────────
   .mat-mdc-form-field:not(.mat-form-field-disabled) {
     .mat-mdc-text-field-wrapper:hover {
-      background: var(--mat-sys-surface-container-highest);
+      background: #e9eef5;
     }
   }
 
-  // ── 4. Focus: white background + purple glow ring ────────────────────────
+  // ── 4. Focus: white bg + soft neutral glow ───────────────────────────────
   .mat-mdc-form-field {
     .mdc-text-field--focused {
       background: #ffffff;
       box-shadow:
-        0 0 0 3px color-mix(in srgb, var(--mat-sys-primary) 18%, transparent),
-        0 2px 8px rgba(0, 0, 0, 0.07);
+        0 0 0 3px rgba(100, 116, 139, 0.14),
+        0 2px 8px rgba(0, 0, 0, 0.06);
 
       &.mdc-text-field--invalid {
         box-shadow:
-          0 0 0 3px color-mix(in srgb, var(--mat-sys-error) 18%, transparent),
-          0 2px 8px rgba(0, 0, 0, 0.07);
+          0 0 0 3px color-mix(in srgb, var(--mat-sys-error) 14%, transparent),
+          0 2px 8px rgba(0, 0, 0, 0.06);
       }
     }
 
@@ -49,45 +49,16 @@ html {
       background: color-mix(
         in srgb,
         var(--mat-sys-error-container) 30%,
-        var(--mat-sys-surface-container-high)
+        #f1f5f9
       );
     }
   }
 
-  // ── 5. Close the notch: restore border-top so the outline is continuous ───
-  // Material sets `border-top: none` on the notch when the label floats; we
-  // restore it with the correct color token per interaction state so the border
-  // appears as a solid rectangle instead of a gap for the label.
-
-  // Default (idle) — outline-color is transparent, so border-top is invisible
+  // ── 5. Notch border-top: keep transparent (outline removed) ──────────────
   .mdc-notched-outline--notched .mdc-notched-outline__notch {
     border-top-style: solid;
-    border-top-width: var(--mat-form-field-outlined-outline-width, 1.5px);
-    border-top-color: var(--mat-form-field-outlined-outline-color, transparent);
-  }
-  // Hover
-  .mdc-text-field:not(.mdc-text-field--focused):hover
-    .mdc-notched-outline--notched
-    .mdc-notched-outline__notch {
-    border-top-color: var(--mat-form-field-outlined-hover-outline-color, rgba(0, 0, 0, 0.12));
-  }
-  // Focus
-  .mdc-text-field--focused .mdc-notched-outline--notched .mdc-notched-outline__notch {
-    border-top-width: var(--mat-form-field-outlined-focus-outline-width, 2px);
-    border-top-color: var(--mat-form-field-outlined-focus-outline-color, var(--mat-sys-primary));
-  }
-  // Error (idle)
-  .mdc-text-field--invalid .mdc-notched-outline--notched .mdc-notched-outline__notch {
-    border-top-color: var(--mat-form-field-outlined-error-outline-color, var(--mat-sys-error));
-  }
-  // Error + focused
-  .mdc-text-field--focused.mdc-text-field--invalid
-    .mdc-notched-outline--notched
-    .mdc-notched-outline__notch {
-    border-top-color: var(
-      --mat-form-field-outlined-error-focus-outline-color,
-      var(--mat-sys-error)
-    );
+    border-top-width: 0;
+    border-top-color: transparent;
   }
 
   // ── 6. Floating label: position INSIDE the field ──────────────────────────
@@ -116,12 +87,12 @@ html {
     letter-spacing: -0.01em;
   }
 
-  // ── 9. Outline border transitions ────────────────────────────────────────
+  // ── 9. Outline border: no transitions needed (borders are transparent) ───
   .mat-mdc-form-field {
     .mdc-notched-outline__leading,
     .mdc-notched-outline__notch,
     .mdc-notched-outline__trailing {
-      transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border-color: transparent !important;
     }
   }
 
@@ -183,13 +154,12 @@ mat-error {
 }
 
 // ── 15. Browser autofill override ─────────────────────────────────────────────
-// Use the gray surface token for idle state, white when focused.
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px var(--mat-sys-surface-container-high) inset !important;
-  -webkit-text-fill-color: var(--mat-sys-on-surface) !important;
-  caret-color: var(--mat-sys-primary);
+  -webkit-box-shadow: 0 0 0 1000px #f1f5f9 inset !important;
+  -webkit-text-fill-color: #1e293b !important;
+  caret-color: #4b6cb7;
   transition: background-color 9999s ease 0s;
 }
 input:-webkit-autofill:focus {

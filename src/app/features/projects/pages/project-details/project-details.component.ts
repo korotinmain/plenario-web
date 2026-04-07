@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnDestroy,
   OnInit,
   computed,
   inject,
@@ -8,6 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, NgClass, NgTemplateOutlet, TitleCasePipe } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -85,9 +87,9 @@ const PRIORITY_META: Record<string, { bg: string; text: string; dot: string }> =
     } @else if (project()) {
 
       <!-- Project header card -->
-      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mb-5">
-        <!-- Color banner -->
-        <div class="h-[92px] relative" [style.background]="project()!.color ?? '#4c68c0'">
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm mb-5" style="overflow: visible">
+        <!-- Color banner (overflow hidden separately so rounded corners apply) -->
+        <div class="h-[92px] relative rounded-t-2xl overflow-hidden" [style.background]="project()!.color ?? '#4c68c0'">
           <div class="absolute inset-0 bg-gradient-to-br from-black/[0.08] to-transparent"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-black/[0.08] to-transparent"></div>
         </div>
@@ -385,11 +387,12 @@ const PRIORITY_META: Record<string, { bg: string; text: string; dot: string }> =
     </ng-template>
   `,
 })
-export class ProjectDetailsComponent implements OnInit {
+export class ProjectDetailsComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(ProjectsApiService);
   private readonly dialog = inject(MatDialog);
   private readonly tasksStore = inject(TasksStore);
+  private readonly destroy$ = new Subject<void>();
 
   readonly project = signal<Project | null>(null);
   readonly loading = signal(true);
@@ -445,18 +448,30 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id')!;
-    this.api.getById(id).subscribe({
-      next: (p) => {
-        this.project.set(p);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Project not found.');
-        this.loading.set(false);
-      },
+    // React to param changes so navigating between projects reloads the page
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const id = params.get('id')!;
+      this.project.set(null);
+      this.loading.set(true);
+      this.error.set(null);
+      this.doneExpanded.set(false);
+      this.api.getById(id).subscribe({
+        next: (p) => {
+          this.project.set(p);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('Project not found.');
+          this.loading.set(false);
+        },
+      });
+      this.tasksStore.load();
     });
-    this.tasksStore.load();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   openEdit(): void {

@@ -35,14 +35,14 @@ html {
       // Label colors — muted slate, softer on focus
       outlined-label-text-color: rgba(71, 85, 105, 0.7),
       outlined-hover-label-text-color: rgba(30, 41, 59, 0.7),
-      outlined-focus-label-text-color: #4b6cb7,
+      outlined-focus-label-text-color: #4c68c0,
       outlined-error-label-text-color: var(--mat-sys-error),
       outlined-error-focus-label-text-color: var(--mat-sys-error),
       outlined-error-hover-label-text-color: var(--mat-sys-error),
       // Input text & placeholder
       outlined-input-text-color: #1e293b,
       outlined-input-text-placeholder-color: rgba(100, 116, 139, 0.55),
-      outlined-caret-color: #4b6cb7,
+      outlined-caret-color: #4c68c0,
       // Subscript (hint / error message area)
       subscript-text-size: 0.75rem,
       subscript-text-line-height: 1.5
@@ -66,7 +66,7 @@ body {
 }
 
 a {
-  color: var(--mat-sys-primary);
+  color: #4c68c0;
   text-decoration: none;
 
   &:hover {

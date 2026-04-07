@@ -1,5 +1,18 @@
 // Design tokens — spacing, radius, layout, color system
 :root {
+  // ── Material system color overrides ──────────────────────────────────────
+  // M3 blue-palette in light mode generates an over-saturated primary.
+  // Override to a calmer slate-blue that reads as "blue" without being vivid.
+  --mat-sys-primary: #4c68c0;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #dce6ff;
+  --mat-sys-on-primary-container: #002076;
+  // MDC filled-button reads its own variables independently of mat-sys-*
+  --mdc-filled-button-container-color: #4c68c0;
+  --mdc-filled-button-label-text-color: #ffffff;
+  --mdc-text-button-label-text-color: #4c68c0;
+  --mdc-outlined-button-label-text-color: #4c68c0;
+  --mdc-outlined-button-outline-color: rgba(76, 104, 192, 0.35);
   // ── Spacing ──────────────────────────────────────────────────────────────
   --pln-spacing-xs: 4px;
   --pln-spacing-sm: 8px;
@@ -32,10 +45,10 @@
   --pln-sidebar-text-hover: #1e293b;
   --pln-sidebar-text-active: #2563eb;
   --pln-sidebar-item-hover: rgba(37, 99, 235, 0.06);
-  --pln-sidebar-item-active-bg: rgba(37, 99, 235, 0.09);
-  --pln-sidebar-item-active-color: #2563eb;
+  --pln-sidebar-item-active-bg: rgba(76, 104, 192, 0.09);
+  --pln-sidebar-item-active-color: #4c68c0;
   --pln-sidebar-section-label: rgba(100, 116, 139, 0.65);
-  --pln-sidebar-accent: #2563eb;
+  --pln-sidebar-accent: #4c68c0;
 
   // ── Content area ──────────────────────────────────────────────────────────
   --pln-page-bg: #f4f7fb;

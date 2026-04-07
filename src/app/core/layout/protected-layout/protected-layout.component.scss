@@ -3,6 +3,10 @@
   height: 100%;
 }
 
+.app-container {
+  height: 100%;
+}
+
 // ── Sidebar container ─────────────────────────────────────────────────────────
 .app-sidebar {
   width: var(--pln-sidebar-width);
@@ -11,7 +15,6 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  position: relative;
 
   // Soft blue glow in top-right corner
   &::before {

@@ -3,7 +3,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 
 /**
- * Tailwind-styled input group.
+ * Tailwind-styled input / textarea group.
  * Pass error messages via ng-content:
  *
  *   <tw-input-field label="Email" type="email" [control]="emailCtrl">
@@ -11,6 +11,8 @@ import { NgClass } from '@angular/common';
  *       <p class="text-xs text-rose-500 mt-0.5">Required</p>
  *     }
  *   </tw-input-field>
+ *
+ * Set rows > 1 to render a <textarea> instead of <input>.
  */
 @Component({
   selector: 'tw-input-field',
@@ -26,19 +28,34 @@ import { NgClass } from '@angular/common';
         {{ label }}
       </label>
 
-      <input
-        [id]="id"
-        [type]="type"
-        [formControl]="control"
-        [placeholder]="placeholder"
-        [autocomplete]="autocomplete"
-        class="block w-full px-4 py-[15px] rounded-2xl border text-[0.9375rem] font-medium text-slate-900 placeholder:text-slate-400/70 outline-none transition-all duration-200"
-        [ngClass]="
-          hasError
-            ? 'bg-rose-50 border-rose-300 focus:bg-white focus:border-rose-400 focus:ring-0'
-            : 'bg-slate-100 border-transparent focus:bg-white focus:border-[#4c68c0] focus:ring-0'
-        "
-      />
+      @if (rows > 1) {
+        <textarea
+          [id]="id"
+          [formControl]="control"
+          [placeholder]="placeholder"
+          [rows]="rows"
+          class="block w-full px-4 py-3.5 rounded-2xl border text-[0.9375rem] font-medium text-slate-900 placeholder:text-slate-400/70 outline-none transition-all duration-200 resize-none leading-relaxed"
+          [ngClass]="
+            hasError
+              ? 'bg-rose-50 border-rose-300 focus:bg-white focus:border-rose-400 focus:ring-0'
+              : 'bg-slate-100 border-transparent focus:bg-white focus:border-[#4c68c0] focus:ring-0'
+          "
+        ></textarea>
+      } @else {
+        <input
+          [id]="id"
+          [type]="type"
+          [formControl]="control"
+          [placeholder]="placeholder"
+          [autocomplete]="autocomplete"
+          class="block w-full px-4 py-[15px] rounded-2xl border text-[0.9375rem] font-medium text-slate-900 placeholder:text-slate-400/70 outline-none transition-all duration-200"
+          [ngClass]="
+            hasError
+              ? 'bg-rose-50 border-rose-300 focus:bg-white focus:border-rose-400 focus:ring-0'
+              : 'bg-slate-100 border-transparent focus:bg-white focus:border-[#4c68c0] focus:ring-0'
+          "
+        />
+      }
 
       <ng-content />
     </div>
@@ -52,6 +69,7 @@ export class InputFieldComponent {
   @Input() type = 'text';
   @Input() placeholder = '';
   @Input() autocomplete = 'off';
+  @Input() rows = 1;
 
   readonly id = `tw-input-${++InputFieldComponent.seq}`;
 

@@ -7,12 +7,8 @@ import {
   computed,
 } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { NgClass } from '@angular/common';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { InputFieldComponent } from '../../../../shared/ui/input-field/input-field.component';
@@ -28,12 +24,14 @@ import {
 
 export interface TaskFormDialogData {
   task?: Task;
+  defaultProjectId?: string;
+  defaultDueDate?: string;
 }
 
-const STATUS_OPTIONS: { value: TaskStatus; label: string; icon: string }[] = [
-  { value: 'TODO', label: 'To do', icon: 'radio_button_unchecked' },
-  { value: 'IN_PROGRESS', label: 'In progress', icon: 'timelapse' },
-  { value: 'DONE', label: 'Done', icon: 'check_circle' },
+const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = [
+  { value: 'TODO', label: 'To do' },
+  { value: 'IN_PROGRESS', label: 'In progress' },
+  { value: 'DONE', label: 'Done' },
 ];
 
 const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
@@ -45,56 +43,62 @@ const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
 @Component({
   selector: 'app-task-form-dialog',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    MatInputModule,
-    InputFieldComponent,
-  ],
+  imports: [ReactiveFormsModule, NgClass, MatDialogModule, InputFieldComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="dialog-shell dialog-enter">
-      <div class="dialog-header">
-        <div class="dialog-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            @if (isEdit) {
+    <div class="w-full">
+      <!-- ── Header ─────────────────────────────────────────────────────── -->
+      <div class="flex items-start gap-4 px-6 pt-6">
+        <!-- Icon -->
+        <div
+          class="w-10 h-10 rounded-xl bg-[#4c68c0]/10 text-[#4c68c0] flex items-center justify-center shrink-0"
+        >
+          @if (isEdit) {
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               />
               <path
                 d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               />
-            } @else {
-              <path
-                d="M12 5v14M5 12h14"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-            }
-          </svg>
+            </svg>
+          } @else {
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          }
         </div>
-        <div>
-          <h2 class="dialog-title">{{ isEdit ? 'Edit task' : 'New task' }}</h2>
-          <p class="dialog-sub">
-            {{ isEdit ? 'Update the task details.' : 'Add a task to your list.' }}
+
+        <!-- Title + subtitle -->
+        <div class="flex-1 min-w-0">
+          <h2 class="text-[1.125rem] font-bold text-slate-900 tracking-tight leading-snug">
+            {{ isEdit ? 'Edit task' : 'New task' }}
+          </h2>
+          <p class="text-sm text-slate-400 mt-0.5">
+            {{ isEdit ? 'Update the details below.' : 'Fill in the details to create a task.' }}
           </p>
         </div>
+
+        <!-- Close button -->
+        <button
+          type="button"
+          (click)="dialogRef.close()"
+          class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors -mt-0.5 -mr-1"
+          aria-label="Close"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="dialog-body">
+      <div class="h-px bg-slate-100 mt-5"></div>
+
+      <!-- ── Form body ──────────────────────────────────────────────────── -->
+      <form [formGroup]="form" (ngSubmit)="submit()" class="px-6 py-5 flex flex-col gap-5">
+
         <!-- Title -->
         <tw-input-field
           label="Task title"
@@ -112,44 +116,49 @@ const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
         <!-- Description -->
         <tw-input-field
           label="Description"
-          placeholder="Optional notes or context"
+          placeholder="Optional notes or context…"
           [control]="descCtrl"
+          [rows]="3"
         />
 
-        <!-- Status + Priority row -->
-        <div class="row-fields">
-          <div class="chip-field">
-            <p class="chip-field__label">Status</p>
-            <div class="chip-group">
+        <div class="h-px bg-slate-100 -mx-6"></div>
+
+        <!-- Status + Priority -->
+        <div class="grid grid-cols-2 gap-5">
+          <!-- Status -->
+          <div>
+            <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.07em] text-slate-500 mb-2.5">
+              Status
+            </p>
+            <div class="flex flex-col gap-1.5">
               @for (s of statuses; track s.value) {
                 <button
                   type="button"
-                  class="status-chip"
-                  [class.status-chip--active]="selectedStatus() === s.value"
-                  [class]="'status-chip--' + s.value.toLowerCase()"
                   (click)="selectedStatus.set(s.value)"
+                  class="flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-sm font-medium transition-all text-left"
+                  [ngClass]="statusChipClass(s.value)"
                 >
+                  <span class="w-2 h-2 rounded-full shrink-0" [ngClass]="statusDotClass(s.value)"></span>
                   {{ s.label }}
                 </button>
               }
             </div>
           </div>
 
-          <div class="chip-field">
-            <p class="chip-field__label">Priority</p>
-            <div class="chip-group">
+          <!-- Priority -->
+          <div>
+            <p class="text-[0.6875rem] font-semibold uppercase tracking-[0.07em] text-slate-500 mb-2.5">
+              Priority
+            </p>
+            <div class="flex flex-col gap-1.5">
               @for (p of priorities; track p.value) {
                 <button
                   type="button"
-                  class="priority-chip"
-                  [class.priority-chip--active]="selectedPriority() === p.value"
-                  [class]="
-                    'priority-chip--' +
-                    p.value.toLowerCase() +
-                    (selectedPriority() === p.value ? ' priority-chip--active' : '')
-                  "
                   (click)="selectedPriority.set(p.value)"
+                  class="flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-sm font-medium transition-all text-left"
+                  [ngClass]="priorityChipClass(p.value)"
                 >
+                  <span class="w-2 h-2 rounded-full shrink-0" [ngClass]="priorityDotClass(p.value)"></span>
                   {{ p.label }}
                 </button>
               }
@@ -157,282 +166,89 @@ const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
           </div>
         </div>
 
-        <!-- Due date + Project row -->
-        <div class="row-fields">
-          <div class="date-field">
-            <label class="field-label" for="task-due-date">Due date</label>
-            <input id="task-due-date" type="date" class="date-input" formControlName="dueDate" />
+        <div class="h-px bg-slate-100 -mx-6"></div>
+
+        <!-- Due date + Project -->
+        <div class="grid grid-cols-2 gap-5">
+          <!-- Due date -->
+          <div>
+            <label
+              for="task-due"
+              class="text-[0.6875rem] font-semibold uppercase tracking-[0.07em] text-slate-500 block mb-2"
+            >
+              Due date
+            </label>
+            <input
+              id="task-due"
+              type="date"
+              formControlName="dueDate"
+              class="w-full bg-slate-100 border border-transparent rounded-2xl px-4 py-[13px] text-[0.9375rem] font-medium text-slate-900 outline-none focus:bg-white focus:border-[#4c68c0] focus:ring-0 transition-all"
+            />
           </div>
 
-          <div class="select-field">
-            <label class="field-label">Project</label>
-            <mat-form-field appearance="outline" class="project-select">
-              <mat-select formControlName="projectId" placeholder="No project">
-                <mat-option [value]="null">No project</mat-option>
+          <!-- Project -->
+          <div>
+            <label
+              for="task-project"
+              class="text-[0.6875rem] font-semibold uppercase tracking-[0.07em] text-slate-500 block mb-2"
+            >
+              Project
+            </label>
+            <div class="relative">
+              <select
+                id="task-project"
+                formControlName="projectId"
+                class="w-full appearance-none bg-slate-100 border border-transparent rounded-2xl pl-4 pr-10 py-[13px] text-[0.9375rem] font-medium text-slate-900 outline-none focus:bg-white focus:border-[#4c68c0] focus:ring-0 transition-all cursor-pointer"
+              >
+                <option value="">No project</option>
                 @for (p of projects(); track p.id) {
-                  <mat-option [value]="p.id">
-                    <span class="project-option">
-                      <span class="project-dot" [style.background]="p.color ?? '#2563eb'"></span>
-                      {{ p.name }}
-                    </span>
-                  </mat-option>
+                  <option [value]="p.id">{{ p.name }}</option>
                 }
-              </mat-select>
-            </mat-form-field>
+              </select>
+              <!-- Chevron -->
+              <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
 
+        <!-- Error banner -->
         @if (saveError()) {
-          <div class="error-row">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              aria-hidden="true"
-              class="shrink-0"
-            >
-              <path
-                d="M8 5v4m0 2.5h.01M2 13h12L8 2 2 13z"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
+          <div class="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="shrink-0">
+              <path d="M8 5v4m0 2.5h.01M2 13h12L8 2 2 13z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             {{ saveError() }}
           </div>
         }
 
-        <div class="dialog-actions">
-          <button type="button" mat-stroked-button (click)="dialogRef.close()">Cancel</button>
-          <button type="submit" mat-flat-button [disabled]="saving()">
+        <!-- Actions -->
+        <div class="flex justify-end gap-2.5 pt-1">
+          <button
+            type="button"
+            (click)="dialogRef.close()"
+            class="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            [disabled]="saving()"
+            class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#4c68c0] hover:bg-[#3d58af] disabled:opacity-50 transition-colors flex items-center gap-2"
+          >
             @if (saving()) {
-              <mat-spinner diameter="18" />
-            } @else {
-              {{ isEdit ? 'Save changes' : 'Create task' }}
+              <span class="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></span>
             }
+            {{ isEdit ? 'Save changes' : 'Create task' }}
           </button>
         </div>
       </form>
     </div>
   `,
-  styles: [
-    `
-      .dialog-shell {
-        width: 520px;
-        max-width: 100%;
-      }
-
-      .dialog-header {
-        display: flex;
-        align-items: flex-start;
-        gap: 14px;
-        padding: 24px 24px 0;
-      }
-
-      .dialog-icon {
-        flex-shrink: 0;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: rgba(37, 99, 235, 0.1);
-        color: #2563eb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .dialog-title {
-        margin: 0 0 4px;
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: var(--mat-sys-on-surface);
-        letter-spacing: -0.02em;
-      }
-
-      .dialog-sub {
-        margin: 0;
-        font-size: 0.8125rem;
-        color: var(--mat-sys-on-surface-variant);
-      }
-
-      .dialog-body {
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-        padding: 20px 24px 24px;
-      }
-
-      .row-fields {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-      }
-
-      .chip-field__label,
-      .field-label {
-        display: block;
-        margin: 0 0 6px;
-        font-size: 0.6875rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        color: var(--mat-sys-on-surface-variant);
-      }
-
-      .chip-group {
-        display: flex;
-        gap: 5px;
-        flex-wrap: wrap;
-      }
-
-      // ── Status chips ────────────────────────────────────────────────────────
-      .status-chip {
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        border: 1.5px solid var(--mat-sys-outline-variant);
-        background: transparent;
-        color: var(--mat-sys-on-surface-variant);
-        cursor: pointer;
-        transition: all 0.14s;
-
-        &:hover {
-          border-color: var(--mat-sys-primary);
-          color: var(--mat-sys-primary);
-        }
-
-        &--active,
-        &.status-chip--todo.status-chip--active {
-          border-color: #71717a;
-          background: #f4f4f5;
-          color: #3f3f46;
-          font-weight: 600;
-        }
-
-        &.status-chip--in_progress.status-chip--active {
-          border-color: #2563eb;
-          background: rgba(37, 99, 235, 0.08);
-          color: #2563eb;
-          font-weight: 600;
-        }
-
-        &.status-chip--done.status-chip--active {
-          border-color: #059669;
-          background: rgba(5, 150, 105, 0.08);
-          color: #059669;
-          font-weight: 600;
-        }
-      }
-
-      // ── Priority chips ──────────────────────────────────────────────────────
-      .priority-chip {
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        border: 1.5px solid var(--mat-sys-outline-variant);
-        background: transparent;
-        color: var(--mat-sys-on-surface-variant);
-        cursor: pointer;
-        transition: all 0.14s;
-
-        &:hover {
-          border-color: var(--mat-sys-primary);
-          color: var(--mat-sys-primary);
-        }
-
-        &.priority-chip--low.priority-chip--active {
-          border-color: #0284c7;
-          background: rgba(2, 132, 199, 0.08);
-          color: #0284c7;
-          font-weight: 600;
-        }
-
-        &.priority-chip--medium.priority-chip--active {
-          border-color: #d97706;
-          background: rgba(217, 119, 6, 0.08);
-          color: #d97706;
-          font-weight: 600;
-        }
-
-        &.priority-chip--high.priority-chip--active {
-          border-color: #dc2626;
-          background: rgba(220, 38, 38, 0.08);
-          color: #dc2626;
-          font-weight: 600;
-        }
-      }
-
-      // ── Date input ──────────────────────────────────────────────────────────
-      .date-input {
-        display: block;
-        width: 100%;
-        padding: 9px 12px;
-        border: 1.5px solid var(--mat-sys-outline-variant);
-        border-radius: 10px;
-        font-size: 0.875rem;
-        font-family: inherit;
-        color: var(--mat-sys-on-surface);
-        background: transparent;
-        outline: none;
-        transition: border-color 0.15s;
-        box-sizing: border-box;
-
-        &:focus {
-          border-color: var(--mat-sys-primary);
-        }
-      }
-
-      // ── Project select ──────────────────────────────────────────────────────
-      .project-select {
-        width: 100%;
-
-        .mat-mdc-form-field-subscript-wrapper {
-          display: none;
-        }
-      }
-
-      .project-option {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .project-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-
-      .select-field .field-label {
-        margin-bottom: 2px;
-      }
-
-      // ── Error row ───────────────────────────────────────────────────────────
-      .error-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 14px;
-        border-radius: 10px;
-        background: #fff1f2;
-        border: 1px solid #fecdd3;
-        color: #be123c;
-        font-size: 0.8125rem;
-      }
-
-      .dialog-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        padding-top: 4px;
-      }
-    `,
-  ],
+  styles: [':host { display: block; }'],
 })
 export class TaskFormDialogComponent {
   readonly dialogRef = inject(MatDialogRef<TaskFormDialogComponent>);
@@ -466,18 +282,49 @@ export class TaskFormDialogComponent {
     dueDate: this.fb.control<string | null>(
       this.task?.dueDate?.slice(0, 10) ?? this.defaultDueDate ?? null,
     ),
-    projectId: this.fb.control<string | null>(
-      this.task?.projectId ?? this.defaultProjectId ?? null,
+    // Native select uses empty string for "no project"
+    projectId: this.fb.nonNullable.control(
+      this.task?.projectId ?? this.defaultProjectId ?? '',
     ),
   });
 
-  get titleCtrl() {
-    return this.form.controls.title;
-  }
-  get descCtrl() {
-    return this.form.controls.description;
+  get titleCtrl() { return this.form.controls.title; }
+  get descCtrl()  { return this.form.controls.description; }
+
+  // ── Chip classes ────────────────────────────────────────────────────────────
+  statusChipClass(value: TaskStatus): string {
+    if (this.selectedStatus() !== value) {
+      return 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50';
+    }
+    return {
+      TODO:        'border-slate-400 bg-slate-100 text-slate-700',
+      IN_PROGRESS: 'border-[#4c68c0] bg-[#4c68c0]/10 text-[#4c68c0]',
+      DONE:        'border-emerald-500 bg-emerald-50 text-emerald-700',
+    }[value];
   }
 
+  statusDotClass(value: TaskStatus): string {
+    if (this.selectedStatus() !== value) return 'bg-slate-300';
+    return { TODO: 'bg-slate-500', IN_PROGRESS: 'bg-[#4c68c0]', DONE: 'bg-emerald-500' }[value];
+  }
+
+  priorityChipClass(value: TaskPriority): string {
+    if (this.selectedPriority() !== value) {
+      return 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50';
+    }
+    return {
+      LOW:    'border-sky-400 bg-sky-50 text-sky-700',
+      MEDIUM: 'border-amber-400 bg-amber-50 text-amber-700',
+      HIGH:   'border-red-400 bg-red-50 text-red-600',
+    }[value];
+  }
+
+  priorityDotClass(value: TaskPriority): string {
+    if (this.selectedPriority() !== value) return 'bg-slate-300';
+    return { LOW: 'bg-sky-400', MEDIUM: 'bg-amber-400', HIGH: 'bg-red-400' }[value];
+  }
+
+  // ── Submit ──────────────────────────────────────────────────────────────────
   submit(): void {
     this.form.markAllAsTouched();
     if (this.form.invalid || this.saving()) return;
@@ -485,20 +332,20 @@ export class TaskFormDialogComponent {
     this.saving.set(true);
     this.saveError.set(null);
 
-    const dueDate = this.form.controls.dueDate.value ?? undefined;
-    const projectId = this.form.controls.projectId.value ?? undefined;
+    const dueDate  = this.form.controls.dueDate.value ?? undefined;
+    const projectId = this.form.controls.projectId.value || undefined; // '' → undefined
 
     if (this.isEdit && this.task) {
       const data: UpdateTaskRequest = {
-        title: this.titleCtrl.value.trim(),
+        title:       this.titleCtrl.value.trim(),
         description: this.descCtrl.value.trim() || undefined,
-        status: this.selectedStatus(),
-        priority: this.selectedPriority(),
-        dueDate: dueDate ?? null,
-        projectId: projectId ?? null,
+        status:      this.selectedStatus(),
+        priority:    this.selectedPriority(),
+        dueDate:     dueDate ?? null,
+        projectId:   projectId ?? null,
       };
       this.tasksStore.update(this.task.id, data).subscribe({
-        next: (updated) => this.dialogRef.close(updated),
+        next:  (updated) => this.dialogRef.close(updated),
         error: () => {
           this.saveError.set(this.tasksStore['_state$'].value.saveError);
           this.saving.set(false);
@@ -506,15 +353,15 @@ export class TaskFormDialogComponent {
       });
     } else {
       const data: CreateTaskRequest = {
-        title: this.titleCtrl.value.trim(),
+        title:       this.titleCtrl.value.trim(),
         description: this.descCtrl.value.trim() || undefined,
-        status: this.selectedStatus(),
-        priority: this.selectedPriority(),
+        status:      this.selectedStatus(),
+        priority:    this.selectedPriority(),
         dueDate,
         projectId,
       };
       this.tasksStore.create(data).subscribe({
-        next: (created) => this.dialogRef.close(created),
+        next:  (created) => this.dialogRef.close(created),
         error: () => {
           this.saveError.set(this.tasksStore['_state$'].value.saveError);
           this.saving.set(false);
@@ -523,3 +370,4 @@ export class TaskFormDialogComponent {
     }
   }
 }
+
